@@ -87,6 +87,8 @@ const TextAreaField = ({ label, hint, value, onChange, placeholder, required = f
   </div>
 );
 
+const CLASS_OPTIONS = ['빅데이터A', '빅데이터B', '빅데이터C', '빅데이터D'];
+
 const ANALYSIS_TECHNIQUE_OPTIONS = [
   { value: 'two_groups', label: '두 집단 비교' },
   { value: 'two_variables', label: '두 변수의 관계 분석' },
@@ -187,8 +189,12 @@ function StudentForm({ showToast }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!studentId.trim() || !studentName.trim() || !studentClass.trim()) {
-      showToast('학번, 이름, 반을 모두 입력해주세요.', 'error');
+    if (!studentId.trim() || !studentName.trim()) {
+      showToast('학번과 이름을 입력해주세요.', 'error');
+      return;
+    }
+    if (!studentClass) {
+      showToast('반(빅데이터 A~D)을 선택해주세요.', 'error');
       return;
     }
     if (!analysisTechnique) {
@@ -258,7 +264,7 @@ function StudentForm({ showToast }) {
       </div>
 
       <form onSubmit={handleSubmit} className="p-8 space-y-8">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
               학번 <span className="text-red-500">*</span>
@@ -287,19 +293,32 @@ function StudentForm({ showToast }) {
               onDrop={handleTextDrop}
             />
           </div>
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">
-              반 <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              placeholder="예: 1반"
-              className={inputClass}
-              value={studentClass}
-              onChange={(e) => setStudentClass(e.target.value)}
-              onPaste={handleTextPaste}
-              onDrop={handleTextDrop}
-            />
+        </div>
+
+        <div>
+          <p className="text-sm font-semibold text-gray-700 mb-2">
+            반 <span className="text-red-500">*</span>
+            <span className="font-normal text-gray-500 ml-1">(해당 분반 하나만 선택)</span>
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {CLASS_OPTIONS.map((opt) => (
+              <label
+                key={opt}
+                className={`flex cursor-pointer items-center justify-center rounded-lg border px-3 py-3 text-center text-sm font-medium transition-colors ${
+                  studentClass === opt ? 'border-orange-500 bg-orange-50 text-orange-900' : 'border-gray-200 bg-white text-gray-800 hover:border-orange-300'
+                }`}
+              >
+                <input
+                  type="radio"
+                  name="studentClass"
+                  value={opt}
+                  checked={studentClass === opt}
+                  onChange={() => setStudentClass(opt)}
+                  className="sr-only"
+                />
+                {opt}
+              </label>
+            ))}
           </div>
         </div>
 
