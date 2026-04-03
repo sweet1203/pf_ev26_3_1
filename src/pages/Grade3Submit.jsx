@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Link, useOutletContext } from 'react-router-dom';
+import { useOutletContext } from 'react-router-dom';
 import { AlertCircle } from 'lucide-react';
 import { TextAreaField } from '../components/TextAreaField.jsx';
 import { getClientSubmissionMeta } from '../clientDeviceMeta.js';
@@ -164,13 +164,7 @@ export default function Grade3Submit() {
         <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-orange-600 rounded-full opacity-50" />
       </div>
 
-      <div className="px-8 pt-4">
-        <Link to="/" className="text-sm text-orange-600 hover:text-orange-800 font-medium">
-          ← 학년 선택으로
-        </Link>
-      </div>
-
-      <form onSubmit={handleSubmit} className="p-8 pt-4 space-y-8">
+      <form onSubmit={handleSubmit} className="p-8 space-y-8">
         <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950 leading-relaxed">
           <p className="font-semibold text-amber-900 mb-1">📌 채점 안내</p>
           <p>

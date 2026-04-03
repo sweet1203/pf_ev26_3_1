@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Link, useOutletContext } from 'react-router-dom';
+import { useOutletContext } from 'react-router-dom';
 import { TextAreaField } from '../components/TextAreaField.jsx';
 import { getClientSubmissionMeta } from '../clientDeviceMeta.js';
 import { createTextGuards } from '../formGuards.js';
@@ -116,13 +116,7 @@ export default function Grade2Submit() {
         <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-teal-700 rounded-full opacity-50" />
       </div>
 
-      <div className="px-8 pt-4">
-        <Link to="/" className="text-sm text-teal-700 hover:text-teal-900 font-medium">
-          ← 학년 선택으로
-        </Link>
-      </div>
-
-      <form onSubmit={handleSubmit} className="p-8 pt-4 space-y-8">
+      <form onSubmit={handleSubmit} className="p-8 space-y-8">
         <div>
           <h2 className="text-lg font-bold text-gray-800 mb-4">✔ 기본 정보</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
@@ -258,6 +252,10 @@ export default function Grade2Submit() {
             onDrop={handleTextDrop}
             onBeforeInput={handleBeforeInput}
           />
+        </div>
+
+        <div className="mt-8 rounded-xl border border-orange-200 bg-orange-50 px-5 py-4 text-center text-gray-800">
+          <p className="text-base font-semibold">파일은 리로스쿨에 제출하세요.</p>
         </div>
 
         <button
