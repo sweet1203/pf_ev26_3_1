@@ -1,27 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
-import { AlertCircle } from 'lucide-react';
 import { TextAreaField } from '../components/TextAreaField.jsx';
 import { getClientSubmissionMeta } from '../clientDeviceMeta.js';
 import { createTextGuards } from '../formGuards.js';
 import { postToGoogleSheet } from '../sheetSubmit.js';
 import { CLASS_OPTIONS_GRADE2, GOOGLE_SHEET_TAB_GRADE2 } from '../constants.js';
-
-/** 마침표·물음표·느낌표 기준 문장 수, 또는 줄바꿈 5줄 이상 */
-function meetsMinimumFiveSentences(text) {
-  const t = text.trim();
-  if (!t) return false;
-  const byPunct = t
-    .split(/[.!?。！？…]+/)
-    .map((s) => s.trim())
-    .filter((s) => s.length >= 2);
-  if (byPunct.length >= 5) return true;
-  const byLine = t
-    .split(/\n+/)
-    .map((s) => s.trim())
-    .filter((s) => s.length >= 8);
-  return byLine.length >= 5;
-}
+import { parseFiveDigitStudentId } from '../validateStudentId.js';
 
 function buildTextDataPayload(state) {
   const {
@@ -76,12 +60,10 @@ export default function Grade2Submit() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!studentId.trim() || !studentName.trim()) {
-      showToast('학번과 이름을 입력해주세요.', 'error');
-      return;
-    }
-    if (!studentClass) {
-      showToast('반(정보 A·C·D·E)을 선택해주세요.', 'error');
+
+    const idCheck = parseFiveDigitStudentId(studentId);
+    if (!idCheck.ok) {
+      showToast(idCheck.message, 'error');
       return;
     }
 
@@ -94,17 +76,6 @@ export default function Grade2Submit() {
       dataInterpretation,
     });
 
-    const requiredEmpty = Object.values(textData).some((v) => typeof v === 'string' && !v.trim());
-    if (requiredEmpty) {
-      showToast('모든 문항을 빠짐없이 작성해주세요.', 'error');
-      return;
-    }
-
-    if (!meetsMinimumFiveSentences(dataInterpretation)) {
-      showToast('[③] 데이터 해석은 마침표 등으로 구분된 문장 5개 이상(또는 짧은 문장 5줄 이상)으로 작성해주세요.', 'error');
-      return;
-    }
-
     setIsSubmitting(true);
     try {
       const ts = Date.now();
@@ -112,7 +83,7 @@ export default function Grade2Submit() {
         gradeLevel: 2,
         subject: '정보',
         sheetName: GOOGLE_SHEET_TAB_GRADE2,
-        studentId,
+        studentId: idCheck.id,
         studentName,
         studentClass,
         timestamp: new Date(ts).toLocaleString('ko-KR'),
@@ -152,28 +123,22 @@ export default function Grade2Submit() {
       </div>
 
       <form onSubmit={handleSubmit} className="p-8 pt-4 space-y-8">
-        <div className="rounded-xl border border-teal-200 bg-teal-50 px-4 py-3 text-sm text-teal-950 leading-relaxed">
-          <p className="font-semibold text-teal-900 mb-1">📌 채점·작성 안내</p>
-          <p>
-            [③] 데이터 해석은{' '}
-            <span className="font-semibold">변화 추이·특징·미래 예측·사회적 의미</span>를 담은{' '}
-            <span className="font-semibold">5문장 이상</span>으로 작성하세요.
-          </p>
-        </div>
-
         <div>
           <h2 className="text-lg font-bold text-gray-800 mb-4">✔ 기본 정보</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">
-                학번을 작성하세요. <span className="text-red-500">*</span>
+                학번을 작성하세요.
               </label>
               <input
                 type="text"
-                placeholder="예: 20101"
+                inputMode="numeric"
+                autoComplete="off"
+                maxLength={5}
+                placeholder="숫자 5자리 (예: 20101)"
                 className={inputClass}
                 value={studentId}
-                onChange={(e) => setStudentId(e.target.value)}
+                onChange={(e) => setStudentId(e.target.value.replace(/\D/g, '').slice(0, 5))}
                 onPaste={handleTextPaste}
                 onDrop={handleTextDrop}
                 onBeforeInput={handleBeforeInput}
@@ -181,7 +146,7 @@ export default function Grade2Submit() {
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">
-                이름을 작성하세요. <span className="text-red-500">*</span>
+                이름을 작성하세요.
               </label>
               <input
                 type="text"
@@ -198,7 +163,7 @@ export default function Grade2Submit() {
 
           <div>
             <p className="text-sm font-semibold text-gray-700 mb-2">
-              반을 작성하세요. <span className="text-red-500">*</span>
+              반을 작성하세요.
               <span className="font-normal text-gray-500 ml-1">(정보 A, C, D, E 중 하나)</span>
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -224,13 +189,6 @@ export default function Grade2Submit() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 text-sm text-teal-700 bg-teal-50 p-3 rounded-lg border border-teal-100">
-          <AlertCircle size={16} />
-          <span>
-            <strong>주의:</strong> 모든 입력칸은 복사/붙여넣기·텍스트 드래그 앤 드롭이 금지되어 있습니다. 직접 작성해주세요.
-          </span>
-        </div>
-
         <div className="space-y-6 bg-gray-50 p-6 rounded-xl border border-gray-200">
           <h2 className="text-xl font-bold text-gray-800 mb-2">① 데이터 수집</h2>
           <TextAreaField
@@ -238,7 +196,6 @@ export default function Grade2Submit() {
             hint="👉 (예: 공공데이터포털, 통계청 등)"
             value={dataSource}
             onChange={(e) => setDataSource(e.target.value)}
-            required
             rows={3}
             onPaste={handleTextPaste}
             onDrop={handleTextDrop}
@@ -249,7 +206,6 @@ export default function Grade2Submit() {
             hint="👉 (무엇에 대한 데이터인지)"
             value={dataDescription}
             onChange={(e) => setDataDescription(e.target.value)}
-            required
             rows={4}
             onPaste={handleTextPaste}
             onDrop={handleTextDrop}
@@ -260,7 +216,6 @@ export default function Grade2Submit() {
             hint="👉 (예: 연도, 기온, 지역 등)"
             value={dataColumns}
             onChange={(e) => setDataColumns(e.target.value)}
-            required
             rows={3}
             onPaste={handleTextPaste}
             onDrop={handleTextDrop}
@@ -275,7 +230,6 @@ export default function Grade2Submit() {
             hint="👉 (예: 막대그래프, 꺾은선그래프 등)"
             value={graphType}
             onChange={(e) => setGraphType(e.target.value)}
-            required
             rows={2}
             onPaste={handleTextPaste}
             onDrop={handleTextDrop}
@@ -286,7 +240,6 @@ export default function Grade2Submit() {
             hint="👉 (데이터의 특성과 연결하여 설명)"
             value={graphSelectionReason}
             onChange={(e) => setGraphSelectionReason(e.target.value)}
-            required
             rows={4}
             onPaste={handleTextPaste}
             onDrop={handleTextDrop}
@@ -297,10 +250,9 @@ export default function Grade2Submit() {
         <div className="space-y-6 bg-gray-50 p-6 rounded-xl border border-gray-200">
           <h2 className="text-xl font-bold text-gray-800 mb-2">③ 데이터 해석 (핵심)</h2>
           <TextAreaField
-            label="그래프를 바탕으로 데이터의 변화 추이, 특징, 미래 예측, 사회적 의미를 포함하여 5문장 이상의 완성된 글로 작성하세요."
+            label="그래프를 바탕으로 데이터의 변화 추이, 특징, 미래 예측, 사회적 의미를 담아 작성하세요."
             value={dataInterpretation}
             onChange={(e) => setDataInterpretation(e.target.value)}
-            required
             rows={10}
             onPaste={handleTextPaste}
             onDrop={handleTextDrop}

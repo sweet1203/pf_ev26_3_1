@@ -6,6 +6,7 @@ import { getClientSubmissionMeta } from '../clientDeviceMeta.js';
 import { createTextGuards } from '../formGuards.js';
 import { postToGoogleSheet } from '../sheetSubmit.js';
 import { CLASS_OPTIONS_GRADE3, GOOGLE_SHEET_TAB_GRADE3 } from '../constants.js';
+import { parseFiveDigitStudentId } from '../validateStudentId.js';
 
 const ANALYSIS_TECHNIQUE_OPTIONS = [
   { value: 'two_groups', label: '두 집단 비교' },
@@ -100,16 +101,10 @@ export default function Grade3Submit() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!studentId.trim() || !studentName.trim()) {
-      showToast('학번과 이름을 입력해주세요.', 'error');
-      return;
-    }
-    if (!studentClass) {
-      showToast('반(빅데이터 A~D)을 선택해주세요.', 'error');
-      return;
-    }
-    if (!analysisTechnique) {
-      showToast('[②] 분석 방법을 하나 선택해주세요.', 'error');
+
+    const idCheck = parseFiveDigitStudentId(studentId);
+    if (!idCheck.ok) {
+      showToast(idCheck.message, 'error');
       return;
     }
 
@@ -130,22 +125,13 @@ export default function Grade3Submit() {
       interpretationCaveats,
     });
 
-    const requiredEmpty = Object.entries(textData).some(([key, v]) => {
-      if (key === 'analysisTechniqueLabel') return false;
-      return typeof v === 'string' && !v.trim();
-    });
-    if (requiredEmpty) {
-      showToast('모든 문항을 빠짐없이 작성해주세요.', 'error');
-      return;
-    }
-
     setIsSubmitting(true);
     try {
       const ts = Date.now();
       const sheetPayload = {
         gradeLevel: 3,
         sheetName: GOOGLE_SHEET_TAB_GRADE3,
-        studentId,
+        studentId: idCheck.id,
         studentName,
         studentClass,
         timestamp: new Date(ts).toLocaleString('ko-KR'),
@@ -196,14 +182,17 @@ export default function Grade3Submit() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
-              학번 <span className="text-red-500">*</span>
+              학번
             </label>
             <input
               type="text"
-              placeholder="예: 20101"
+              inputMode="numeric"
+              autoComplete="off"
+              maxLength={5}
+              placeholder="숫자 5자리 (예: 20101)"
               className={inputClass}
               value={studentId}
-              onChange={(e) => setStudentId(e.target.value)}
+              onChange={(e) => setStudentId(e.target.value.replace(/\D/g, '').slice(0, 5))}
               onPaste={handleTextPaste}
               onDrop={handleTextDrop}
               onBeforeInput={handleBeforeInput}
@@ -211,7 +200,7 @@ export default function Grade3Submit() {
           </div>
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
-              이름 <span className="text-red-500">*</span>
+              이름
             </label>
             <input
               type="text"
@@ -228,7 +217,7 @@ export default function Grade3Submit() {
 
         <div>
           <p className="text-sm font-semibold text-gray-700 mb-2">
-            반 <span className="text-red-500">*</span>
+            반
             <span className="font-normal text-gray-500 ml-1">(해당 분반 하나만 선택)</span>
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -266,7 +255,6 @@ export default function Grade3Submit() {
             label="선택한 데이터의 이름은 무엇인가요?"
             value={dataName}
             onChange={(e) => setDataName(e.target.value)}
-            required
             rows={2}
             onPaste={handleTextPaste}
             onDrop={handleTextDrop}
@@ -276,7 +264,6 @@ export default function Grade3Submit() {
             label="해당 데이터는 어떤 내용을 담고 있나요? (주요 변수와 함께 2~3문장으로 설명하세요)"
             value={dataContentAndVariables}
             onChange={(e) => setDataContentAndVariables(e.target.value)}
-            required
             rows={4}
             onPaste={handleTextPaste}
             onDrop={handleTextDrop}
@@ -286,7 +273,6 @@ export default function Grade3Submit() {
             label="이 데이터에 포함된 변수 중 범주형 변수와 수치형 변수를 각각 1개 이상 작성하세요."
             value={categoricalNumericVariables}
             onChange={(e) => setCategoricalNumericVariables(e.target.value)}
-            required
             rows={3}
             onPaste={handleTextPaste}
             onDrop={handleTextDrop}
@@ -296,7 +282,6 @@ export default function Grade3Submit() {
             label="이 데이터를 통해 무엇을 알고 싶나요? (자신의 궁금증을 작성하세요)"
             value={curiosityQuestion}
             onChange={(e) => setCuriosityQuestion(e.target.value)}
-            required
             rows={3}
             onPaste={handleTextPaste}
             onDrop={handleTextDrop}
@@ -307,7 +292,6 @@ export default function Grade3Submit() {
             hint='👉 (예: "○○와 ○○의 관계를 분석하고자 한다")'
             value={analysisPurposeOneSentence}
             onChange={(e) => setAnalysisPurposeOneSentence(e.target.value)}
-            required
             rows={2}
             onPaste={handleTextPaste}
             onDrop={handleTextDrop}
@@ -319,7 +303,7 @@ export default function Grade3Submit() {
           <h2 className="text-xl font-bold text-gray-800 mb-2">② 분석기법 선정 (데이터 해석 방법 선택)</h2>
           <div>
             <p className="text-sm font-semibold text-gray-700 mb-2">
-              다음 중 자신의 분석 목적에 가장 적절한 분석 방법을 선택하세요 <span className="text-red-500">*</span>
+              다음 중 자신의 분석 목적에 가장 적절한 분석 방법을 선택하세요
             </p>
             <div className="space-y-2">
               {ANALYSIS_TECHNIQUE_OPTIONS.map((opt) => (
@@ -347,7 +331,6 @@ export default function Grade3Submit() {
             hint="👉 (데이터의 특성과 분석 목적을 함께 설명)"
             value={analysisTechniqueReason}
             onChange={(e) => setAnalysisTechniqueReason(e.target.value)}
-            required
             rows={4}
             onPaste={handleTextPaste}
             onDrop={handleTextDrop}
@@ -361,7 +344,6 @@ export default function Grade3Submit() {
             label="선택한 변수의 기초 통계값(평균, 중앙값, 최댓값, 최솟값, 표준편차 등)을 정리하여 작성하세요."
             value={basicStats}
             onChange={(e) => setBasicStats(e.target.value)}
-            required
             rows={4}
             onPaste={handleTextPaste}
             onDrop={handleTextDrop}
@@ -371,7 +353,6 @@ export default function Grade3Submit() {
             label="위 통계값을 바탕으로, 데이터의 특징을 수치 근거를 포함하여 3가지 이상 설명하세요."
             value={dataFeaturesThreePlus}
             onChange={(e) => setDataFeaturesThreePlus(e.target.value)}
-            required
             rows={5}
             onPaste={handleTextPaste}
             onDrop={handleTextDrop}
@@ -385,7 +366,6 @@ export default function Grade3Submit() {
             label="어떤 그래프를 사용했나요?"
             value={chartUsed}
             onChange={(e) => setChartUsed(e.target.value)}
-            required
             rows={2}
             onPaste={handleTextPaste}
             onDrop={handleTextDrop}
@@ -395,7 +375,6 @@ export default function Grade3Submit() {
             label="해당 그래프를 선택한 이유는 무엇인가요?"
             value={chartSelectionReason}
             onChange={(e) => setChartSelectionReason(e.target.value)}
-            required
             rows={3}
             onPaste={handleTextPaste}
             onDrop={handleTextDrop}
@@ -405,7 +384,6 @@ export default function Grade3Submit() {
             label="그래프를 통해 알 수 있는 내용을 ‘해석 중심’으로 작성하세요. (단순 설명 X)"
             value={chartInterpretation}
             onChange={(e) => setChartInterpretation(e.target.value)}
-            required
             rows={4}
             onPaste={handleTextPaste}
             onDrop={handleTextDrop}
@@ -419,7 +397,6 @@ export default function Grade3Submit() {
             label="분석을 통해 무엇을 알게 되었으며, 최종 결론은 무엇인가요?"
             value={finalConclusion}
             onChange={(e) => setFinalConclusion(e.target.value)}
-            required
             rows={5}
             onPaste={handleTextPaste}
             onDrop={handleTextDrop}
@@ -430,7 +407,6 @@ export default function Grade3Submit() {
             hint="👉 (예: 상관관계와 인과관계 구분, 데이터 한계, 이상치 영향 등)"
             value={interpretationCaveats}
             onChange={(e) => setInterpretationCaveats(e.target.value)}
-            required
             rows={4}
             onPaste={handleTextPaste}
             onDrop={handleTextDrop}
