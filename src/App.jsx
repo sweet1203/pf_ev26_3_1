@@ -237,7 +237,7 @@ function StudentForm({ showToast }) {
         showToast(result.message, 'error');
         return;
       }
-      showToast('🎉 제출되었습니다. 스프레드시트에 기록되었습니다.', 'success');
+      showToast('🎉 제출되었습니다.', 'success');
       resetForm();
     } finally {
       setIsSubmitting(false);
@@ -252,7 +252,6 @@ function StudentForm({ showToast }) {
       <div className="bg-orange-500 p-6 text-white text-center relative overflow-hidden">
         <div className="relative z-10">
           <h1 className="text-3xl font-bold mb-2">빅데이터 분석 수행평가 제출</h1>
-          <p className="text-orange-100">작성 후 제출하면 구글 스프레드시트에만 저장됩니다.</p>
         </div>
         <div className="absolute -top-10 -right-10 w-32 h-32 bg-orange-400 rounded-full opacity-50" />
         <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-orange-600 rounded-full opacity-50" />
@@ -489,7 +488,7 @@ function StudentForm({ showToast }) {
             isSubmitting ? 'bg-orange-400 cursor-not-allowed' : 'bg-orange-600 hover:bg-orange-700'
           }`}
         >
-          {isSubmitting ? '전송 중...' : '최종 제출하기 (스프레드시트)'}
+          {isSubmitting ? '전송 중...' : '최종 제출하기'}
         </button>
       </form>
     </div>
