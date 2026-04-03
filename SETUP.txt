@@ -3,14 +3,19 @@
 2. env.example을 복사해 .env 파일을 만들고 Firebase 웹 앱 설정값을 VITE_FIREBASE_* 로 입력
 3. npm run dev → 브라우저에서 표시된 주소로 접속
 
+[구글 스프레드시트 연동]
+- 앱스 스크립트 웹앱은 브라우저 보안(CORS) 때문에 일반 fetch로는 막히는 경우가 많습니다. 코드에서는 mode: no-cors 로 보냅니다.
+- 본인이 새로 배포한 웹앱이면 .env에 VITE_GOOGLE_SHEET_WEBHOOK_URL=배포한/exec 주소 를 넣고 npm run dev / build 를 다시 하세요.
+- 스크립트 예: function doPost(e) { const d = JSON.parse(e.postData.contents); ... 시트에 append ... }
+- 웹앱 배포 시 "액세스할 수 있는 사용자"를 "모든 사용자"로 두어야 학생 브라우저에서 전송됩니다.
+
 [Firebase 콘솔에서 할 일]
 1. 프로젝트 생성 → Authentication에서 익명 로그인 사용 설정
 2. Firestore 데이터베이스 만들기
-3. Storage 만들기
-4. 프로젝트 설정(톱니바퀴) → 일반 → 내 앱에서 웹 앱 추가 후 설정 객체의 값을 .env에 붙여넣기
-5. Firebase CLI: npm install -g firebase-tools → firebase login → 이 폴더에서 firebase use --add 로 프로젝트 연결 후 .firebaserc의 default를 실제 프로젝트 ID로 수정
-6. 규칙 배포: firebase deploy --only firestore:rules,storage
-7. 웹 빌드 후 호스팅 배포: npm run build → firebase deploy --only hosting
+3. 프로젝트 설정(톱니바퀴) → 일반 → 내 앱에서 웹 앱 추가 후 설정 객체의 값을 .env에 붙여넣기
+4. Firebase CLI: npm install -g firebase-tools → firebase login → 이 폴더에서 firebase use --add 로 프로젝트 연결 후 .firebaserc의 default를 실제 프로젝트 ID로 수정
+5. 규칙 배포: firebase deploy --only firestore:rules
+6. 웹 빌드 후 호스팅 배포: npm run build → firebase deploy --only hosting
 
 [GitHub]
 1. GitHub에 새 저장소 생성

@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Upload, Image as ImageIcon, FileText, AlertCircle, CheckCircle, X, Settings, Lock, Clock, ChevronRight, User, Download, FileBox } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { AlertCircle, CheckCircle, X, Settings, Lock, Clock, ChevronRight, User, Download } from 'lucide-react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
 import { getFirestore, collection, addDoc, onSnapshot } from 'firebase/firestore';
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 // ------------------------------
 // 환경에 따른 Firebase 스마트 초기화
@@ -32,28 +31,31 @@ if (typeof window !== 'undefined' && window.__firebase_config) {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-const storage = getStorage(app);
-
-function sanitizeStorageFileName(name) {
-  return String(name).replace(/[/\\?%*:|"<>]/g, '_').slice(0, 180);
-}
-
-async function uploadFileToStorage(fullStoragePath, file, contentType) {
-  const sref = ref(storage, fullStoragePath);
-  await uploadBytes(sref, file, { contentType: contentType || file.type || 'application/octet-stream' });
-  return getDownloadURL(sref);
-}
-
-async function dataUrlToBlob(dataUrl) {
-  const res = await fetch(dataUrl);
-  return res.blob();
-}
 
 // 데이터베이스 경로 설정 (Canvas 규격 vs Vercel 일반 규격)
 const appId = (typeof window !== 'undefined' && window.__app_id) ? window.__app_id : 'my-school-app';
 const collectionPath = (typeof window !== 'undefined' && window.__app_id)
   ? `artifacts/${appId}/public/data/submissions` 
   : 'submissions';
+
+// 구글 앱스 스크립트 웹앱은 브라우저 CORS 제한이 있어 mode: 'no-cors' 로 보내야 시트에 도달하는 경우가 많습니다.
+const DEFAULT_GOOGLE_SHEET_WEBHOOK =
+  'https://script.google.com/macros/s/AKfycbz6AkbByJ7sGh4qScx-27YzvAxwpP48djzx5VNIT2hE7v9qxvUBjPNfLdvyF8rZ1kRv/exec';
+
+async function postToGoogleSheet(payload) {
+  const url = (import.meta.env.VITE_GOOGLE_SHEET_WEBHOOK_URL || DEFAULT_GOOGLE_SHEET_WEBHOOK).trim();
+  if (!url) return;
+  try {
+    await fetch(url, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify(payload),
+    });
+  } catch (err) {
+    console.error('구글 시트 저장 실패:', err);
+  }
+}
 
 export default function App() {
   const [user, setUser] = useState(null);
@@ -137,11 +139,12 @@ export default function App() {
 // ------------------------------
 // 공통 컴포넌트: 텍스트 입력 필드 
 // ------------------------------
-const TextAreaField = ({ label, value, onChange, placeholder, required = false, rows = 3, onPaste, onDrop }) => (
+const TextAreaField = ({ label, hint, value, onChange, placeholder, required = false, rows = 3, onPaste, onDrop }) => (
   <div className="relative">
     <label className="block text-sm font-semibold text-gray-700 mb-1">
       {label} {required && <span className="text-red-500">*</span>}
     </label>
+    {hint ? <p className="text-xs text-gray-500 mb-2 leading-relaxed">{hint}</p> : null}
     <textarea 
       rows={rows}
       className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none transition-all resize-y"
@@ -152,62 +155,96 @@ const TextAreaField = ({ label, value, onChange, placeholder, required = false, 
   </div>
 );
 
+const ANALYSIS_TECHNIQUE_OPTIONS = [
+  { value: 'two_groups', label: '두 집단 비교' },
+  { value: 'two_variables', label: '두 변수의 관계 분석' },
+  { value: 'distribution', label: '데이터 분포 확인' },
+];
+
+function buildTextDataPayload(state) {
+  const {
+    dataName,
+    dataContentAndVariables,
+    categoricalNumericVariables,
+    curiosityQuestion,
+    analysisPurposeOneSentence,
+    analysisTechnique,
+    analysisTechniqueReason,
+    basicStats,
+    dataFeaturesThreePlus,
+    chartUsed,
+    chartSelectionReason,
+    chartInterpretation,
+    finalConclusion,
+    interpretationCaveats,
+  } = state;
+  const techniqueLabel = ANALYSIS_TECHNIQUE_OPTIONS.find((o) => o.value === analysisTechnique)?.label || '';
+  return {
+    dataName,
+    dataContentAndVariables,
+    categoricalNumericVariables,
+    curiosityQuestion,
+    analysisPurposeOneSentence,
+    analysisTechnique,
+    analysisTechniqueLabel: techniqueLabel,
+    analysisTechniqueReason,
+    basicStats,
+    dataFeaturesThreePlus,
+    chartUsed,
+    chartSelectionReason,
+    chartInterpretation,
+    finalConclusion,
+    interpretationCaveats,
+  };
+}
+
+/** 구(舊) 제출 문서와 호환 */
+function normalizeTextData(td) {
+  if (!td || typeof td !== 'object') return {};
+  if (td.dataName != null || td.finalConclusion != null) return td;
+  return {
+    dataName: td.dataNameOrigin,
+    dataContentAndVariables: td.dataDescription,
+    categoricalNumericVariables: '',
+    curiosityQuestion: td.analysisQuestion,
+    analysisPurposeOneSentence: td.analysisPurpose,
+    analysisTechnique: '',
+    analysisTechniqueLabel: td.analysisMethod,
+    analysisTechniqueReason: td.analysisReason,
+    basicStats: td.basicStats,
+    dataFeaturesThreePlus: td.dataFeatures,
+    chartUsed: td.visualizationGraph,
+    chartSelectionReason: '',
+    chartInterpretation: td.graphInterpretation,
+    finalConclusion: td.conclusion,
+    interpretationCaveats: '',
+  };
+}
+
 // ------------------------------
 // 1. 학생 제출 폼 컴포넌트
 // ------------------------------
 function StudentForm({ user, showToast }) {
   const [studentId, setStudentId] = useState('');
   const [studentName, setStudentName] = useState('');
-  
-  // 세부 텍스트 입력 필드 상태 관리
-  const [dataNameOrigin, setDataNameOrigin] = useState('');
-  const [dataDescription, setDataDescription] = useState('');
-  const [analysisQuestion, setAnalysisQuestion] = useState('');
-  const [analysisPurpose, setAnalysisPurpose] = useState('');
-  const [analysisMethod, setAnalysisMethod] = useState('');
-  const [analysisReason, setAnalysisReason] = useState('');
+  const [studentClass, setStudentClass] = useState('');
+
+  const [dataName, setDataName] = useState('');
+  const [dataContentAndVariables, setDataContentAndVariables] = useState('');
+  const [categoricalNumericVariables, setCategoricalNumericVariables] = useState('');
+  const [curiosityQuestion, setCuriosityQuestion] = useState('');
+  const [analysisPurposeOneSentence, setAnalysisPurposeOneSentence] = useState('');
+  const [analysisTechnique, setAnalysisTechnique] = useState('');
+  const [analysisTechniqueReason, setAnalysisTechniqueReason] = useState('');
   const [basicStats, setBasicStats] = useState('');
-  const [dataFeatures, setDataFeatures] = useState('');
-  const [visualizationGraph, setVisualizationGraph] = useState('');
-  const [graphInterpretation, setGraphInterpretation] = useState('');
-  const [conclusion, setConclusion] = useState('');
+  const [dataFeaturesThreePlus, setDataFeaturesThreePlus] = useState('');
+  const [chartUsed, setChartUsed] = useState('');
+  const [chartSelectionReason, setChartSelectionReason] = useState('');
+  const [chartInterpretation, setChartInterpretation] = useState('');
+  const [finalConclusion, setFinalConclusion] = useState('');
+  const [interpretationCaveats, setInterpretationCaveats] = useState('');
 
-  const [images, setImages] = useState([]);
-  const [dataFiles, setDataFiles] = useState([]);
-  const [orangeFiles, setOrangeFiles] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  const dataFileInputRef = useRef(null);
-  const orangeFileInputRef = useRef(null);
-
-  // 이미지 압축
-  const compressImage = (file) => {
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = (event) => {
-        const img = new Image();
-        img.src = event.target.result;
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const MAX_WIDTH = 800;
-          const MAX_HEIGHT = 800;
-          let width = img.width;
-          let height = img.height;
-          
-          if (width > height) {
-            if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
-          } else {
-            if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
-          }
-          canvas.width = width; canvas.height = height;
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img, 0, 0, width, height);
-          resolve(canvas.toDataURL('image/jpeg', 0.7)); 
-        };
-      };
-    });
-  };
 
   const handleTextPaste = (e) => {
     const pastedText = e.clipboardData.getData('text/plain');
@@ -222,67 +259,25 @@ function StudentForm({ user, showToast }) {
     showToast("❌ 텍스트 드래그 앤 드롭은 금지되어 있습니다.", "error");
   };
 
-  useEffect(() => {
-    const handleGlobalPaste = async (e) => {
-      const items = e.clipboardData?.items;
-      if (!items) return;
-
-      let imageFound = false;
-      for (let i = 0; i < items.length; i++) {
-        if (items[i].type.indexOf('image') !== -1) {
-          imageFound = true;
-          const blob = items[i].getAsFile();
-          const url = URL.createObjectURL(blob);
-          const base64 = await compressImage(blob);
-          
-          setImages(prev => [...prev, { 
-            url, 
-            base64,
-            name: `캡처_이미지_${new Date().getTime()}.jpg` 
-          }]);
-        }
-      }
-      
-      if (imageFound) {
-        showToast("✅ 이미지가 성공적으로 첨부되었습니다.", "success");
-      }
-    };
-
-    window.addEventListener('paste', handleGlobalPaste);
-    return () => window.removeEventListener('paste', handleGlobalPaste);
-  }, []);
-
-  const handleDataFileChange = (e) => {
-    const selectedFiles = Array.from(e.target.files).map((f) => ({
-      file: f,
-      name: f.name,
-      size: f.size,
-    }));
-
-    if (selectedFiles.length > 0) {
-      setDataFiles((prev) => [...prev, ...selectedFiles]);
-      showToast(`✅ ${selectedFiles.length}개의 데이터 파일이 첨부되었습니다.`, 'success');
-    }
-    e.target.value = null;
+  const resetForm = () => {
+    setStudentId('');
+    setStudentName('');
+    setStudentClass('');
+    setDataName('');
+    setDataContentAndVariables('');
+    setCategoricalNumericVariables('');
+    setCuriosityQuestion('');
+    setAnalysisPurposeOneSentence('');
+    setAnalysisTechnique('');
+    setAnalysisTechniqueReason('');
+    setBasicStats('');
+    setDataFeaturesThreePlus('');
+    setChartUsed('');
+    setChartSelectionReason('');
+    setChartInterpretation('');
+    setFinalConclusion('');
+    setInterpretationCaveats('');
   };
-
-  const handleOrangeFileChange = (e) => {
-    const selectedFiles = Array.from(e.target.files).map((f) => ({
-      file: f,
-      name: f.name,
-      size: f.size,
-    }));
-
-    if (selectedFiles.length > 0) {
-      setOrangeFiles((prev) => [...prev, ...selectedFiles]);
-      showToast(`✅ ${selectedFiles.length}개의 오렌지3 파일이 첨부되었습니다.`, 'success');
-    }
-    e.target.value = null;
-  };
-
-  const removeImage = (index) => setImages(prev => prev.filter((_, i) => i !== index));
-  const removeDataFile = (index) => setDataFiles(prev => prev.filter((_, i) => i !== index));
-  const removeOrangeFile = (index) => setOrangeFiles(prev => prev.filter((_, i) => i !== index));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -290,94 +285,64 @@ function StudentForm({ user, showToast }) {
       showToast("서버에 연결 중입니다. 잠시 후 다시 시도해주세요.", "error");
       return;
     }
-    if (!studentId || !studentName) {
-      showToast("학번과 이름을 입력해주세요.", "error");
+    if (!studentId.trim() || !studentName.trim() || !studentClass.trim()) {
+      showToast("학번, 이름, 반을 모두 입력해주세요.", "error");
       return;
     }
-    
-    if (!dataNameOrigin || !analysisPurpose || !conclusion) {
-      showToast("필수 항목을 모두 작성해주세요.", "error");
+    if (!analysisTechnique) {
+      showToast("[②] 분석 방법을 하나 선택해주세요.", "error");
       return;
     }
-    
+
+    const textData = buildTextDataPayload({
+      dataName,
+      dataContentAndVariables,
+      categoricalNumericVariables,
+      curiosityQuestion,
+      analysisPurposeOneSentence,
+      analysisTechnique,
+      analysisTechniqueReason,
+      basicStats,
+      dataFeaturesThreePlus,
+      chartUsed,
+      chartSelectionReason,
+      chartInterpretation,
+      finalConclusion,
+      interpretationCaveats,
+    });
+
+    const requiredEmpty = Object.entries(textData).some(([key, v]) => {
+      if (key === 'analysisTechniqueLabel') return false;
+      return typeof v === 'string' && !v.trim();
+    });
+    if (requiredEmpty) {
+      showToast("모든 문항을 빠짐없이 작성해주세요.", "error");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const ts = Date.now();
-      const safeStudent = sanitizeStorageFileName(studentId || 'unknown');
-      const basePath = `submissions/${user.uid}_${safeStudent}_${ts}`;
-
-      const imageEntries = [];
-      for (let i = 0; i < images.length; i++) {
-        const img = images[i];
-        const blob = await dataUrlToBlob(img.base64);
-        const safeName = sanitizeStorageFileName(img.name || `image_${i}.jpg`);
-        const path = `${basePath}/images/${i}_${safeName}`;
-        const url = await uploadFileToStorage(path, blob, 'image/jpeg');
-        imageEntries.push({ url, name: img.name || `image_${i}.jpg` });
-      }
-
-      const dataFileEntries = [];
-      for (let i = 0; i < dataFiles.length; i++) {
-        const item = dataFiles[i];
-        const safeName = sanitizeStorageFileName(item.name);
-        const path = `${basePath}/data/${i}_${safeName}`;
-        const url = await uploadFileToStorage(path, item.file);
-        dataFileEntries.push({ name: item.name, size: item.size, url });
-      }
-
-      const orangeFileEntries = [];
-      for (let i = 0; i < orangeFiles.length; i++) {
-        const item = orangeFiles[i];
-        const safeName = sanitizeStorageFileName(item.name);
-        const path = `${basePath}/orange/${i}_${safeName}`;
-        const url = await uploadFileToStorage(path, item.file);
-        orangeFileEntries.push({ name: item.name, size: item.size, url });
-      }
+      const sheetPayload = {
+        studentId,
+        studentName,
+        studentClass,
+        timestamp: new Date(ts).toLocaleString('ko-KR'),
+        textData,
+      };
+      await postToGoogleSheet(sheetPayload);
 
       const submissionsRef = collection(db, collectionPath);
       await addDoc(submissionsRef, {
         studentId,
         studentName,
-        textData: {
-          dataNameOrigin, dataDescription, analysisQuestion,
-          analysisPurpose, analysisMethod, analysisReason,
-          basicStats, dataFeatures, visualizationGraph,
-          graphInterpretation, conclusion
-        },
-        images: imageEntries,
-        dataFiles: dataFileEntries,
-        orangeFiles: orangeFileEntries,
-        storagePath: basePath,
+        studentClass,
+        textData,
         timestamp: ts,
       });
-      
-      // 2. 구글 시트로 데이터 자동 전송
-      const googleSheetUrl = 'https://script.google.com/macros/s/AKfycbz6AkbByJ7sGh4qScx-27YzvAxwpP48djzx5VNIT2hE7v9qxvUBjPNfLdvyF8rZ1kRv/exec';
-      fetch(googleSheetUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({
-          studentId,
-          studentName,
-          timestamp: new Date().toLocaleString(),
-          textData: {
-            dataNameOrigin, dataDescription, analysisQuestion,
-            analysisPurpose, analysisMethod, analysisReason,
-            basicStats, dataFeatures, visualizationGraph,
-            graphInterpretation, conclusion
-          }
-        })
-      }).catch(err => console.error("구글 시트 저장 실패:", err));
 
       showToast("🎉 성공적으로 제출되었습니다!", "success");
-      
-      // 폼 초기화
-      setStudentId(''); setStudentName('');
-      setDataNameOrigin(''); setDataDescription(''); setAnalysisQuestion('');
-      setAnalysisPurpose(''); setAnalysisMethod(''); setAnalysisReason('');
-      setBasicStats(''); setDataFeatures(''); setVisualizationGraph('');
-      setGraphInterpretation(''); setConclusion('');
-      setImages([]); setDataFiles([]); setOrangeFiles([]);
+      resetForm();
     } catch (error) {
       console.error(error);
       showToast("제출 중 오류가 발생했습니다.", "error");
@@ -386,33 +351,56 @@ function StudentForm({ user, showToast }) {
     }
   };
 
+  const inputClass =
+    'w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none transition-all';
+
   return (
     <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
       <div className="bg-orange-500 p-6 text-white text-center relative overflow-hidden">
         <div className="relative z-10">
           <h1 className="text-3xl font-bold mb-2">빅데이터 분석 수행평가 제출</h1>
-          <p className="text-orange-100">분석 보고서와 실습 파일을 제출하세요.</p>
+          <p className="text-orange-100">분석 보고서 내용을 작성하여 제출하세요.</p>
         </div>
         <div className="absolute -top-10 -right-10 w-32 h-32 bg-orange-400 rounded-full opacity-50"></div>
         <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-orange-600 rounded-full opacity-50"></div>
       </div>
 
       <form onSubmit={handleSubmit} className="p-8 space-y-8">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">학번</label>
-            <input 
-              type="text" placeholder="예: 20101"
-              className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none transition-all"
-              value={studentId} onChange={(e) => setStudentId(e.target.value)}
+            <label className="block text-sm font-semibold text-gray-700 mb-1">학번 <span className="text-red-500">*</span></label>
+            <input
+              type="text"
+              placeholder="예: 20101"
+              className={inputClass}
+              value={studentId}
+              onChange={(e) => setStudentId(e.target.value)}
+              onPaste={handleTextPaste}
+              onDrop={handleTextDrop}
             />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">이름</label>
-            <input 
-              type="text" placeholder="홍길동"
-              className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-orange-500 focus:outline-none transition-all"
-              value={studentName} onChange={(e) => setStudentName(e.target.value)}
+            <label className="block text-sm font-semibold text-gray-700 mb-1">이름 <span className="text-red-500">*</span></label>
+            <input
+              type="text"
+              placeholder="홍길동"
+              className={inputClass}
+              value={studentName}
+              onChange={(e) => setStudentName(e.target.value)}
+              onPaste={handleTextPaste}
+              onDrop={handleTextDrop}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">반 <span className="text-red-500">*</span></label>
+            <input
+              type="text"
+              placeholder="예: 1반"
+              className={inputClass}
+              value={studentClass}
+              onChange={(e) => setStudentClass(e.target.value)}
+              onPaste={handleTextPaste}
+              onDrop={handleTextDrop}
             />
           </div>
         </div>
@@ -422,140 +410,180 @@ function StudentForm({ user, showToast }) {
           <span><strong>주의:</strong> 모든 텍스트 입력칸은 복사/붙여넣기가 금지되어 있습니다. 직접 작성해주세요.</span>
         </div>
 
-        {/* Ⅰ. 데이터 이해 및 분석 설계 */}
         <div className="space-y-6 bg-gray-50 p-6 rounded-xl border border-gray-200">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Ⅰ. 데이터 이해 및 분석 설계</h2>
-          <TextAreaField label="1. 선택한 데이터의 이름과 출처" value={dataNameOrigin} onChange={(e) => setDataNameOrigin(e.target.value)} required rows={2} onPaste={handleTextPaste} onDrop={handleTextDrop} />
-          <TextAreaField label="2. 해당 데이터는 어떤 내용을 담고 있나요? (2~3문장)" value={dataDescription} onChange={(e) => setDataDescription(e.target.value)} rows={3} onPaste={handleTextPaste} onDrop={handleTextDrop} />
-          <TextAreaField label="3. 이 데이터를 통해 무엇을 알고 싶나요? (분석 질문 작성)" value={analysisQuestion} onChange={(e) => setAnalysisQuestion(e.target.value)} rows={2} onPaste={handleTextPaste} onDrop={handleTextDrop} />
-          <TextAreaField label="4. 분석 목적을 한 문장으로 작성하세요" value={analysisPurpose} onChange={(e) => setAnalysisPurpose(e.target.value)} required rows={2} onPaste={handleTextPaste} onDrop={handleTextDrop} />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <TextAreaField label="5. 어떤 분석 방법을 선택했나요?" value={analysisMethod} onChange={(e) => setAnalysisMethod(e.target.value)} rows={2} onPaste={handleTextPaste} onDrop={handleTextDrop} />
-            <TextAreaField label="6. 해당 분석 방법을 선택한 이유는 무엇인가요?" value={analysisReason} onChange={(e) => setAnalysisReason(e.target.value)} rows={3} onPaste={handleTextPaste} onDrop={handleTextDrop} />
-          </div>
+          <h2 className="text-xl font-bold text-gray-800 mb-2">① 데이터 이해 + 분석 목적</h2>
+          <TextAreaField
+            label="선택한 데이터의 이름은 무엇인가요?"
+            value={dataName}
+            onChange={(e) => setDataName(e.target.value)}
+            required
+            rows={2}
+            onPaste={handleTextPaste}
+            onDrop={handleTextDrop}
+          />
+          <TextAreaField
+            label="해당 데이터는 어떤 내용을 담고 있나요? (주요 변수와 함께 2~3문장으로 설명하세요)"
+            value={dataContentAndVariables}
+            onChange={(e) => setDataContentAndVariables(e.target.value)}
+            required
+            rows={4}
+            onPaste={handleTextPaste}
+            onDrop={handleTextDrop}
+          />
+          <TextAreaField
+            label="이 데이터에 포함된 변수 중 범주형 변수와 수치형 변수를 각각 1개 이상 작성하세요."
+            value={categoricalNumericVariables}
+            onChange={(e) => setCategoricalNumericVariables(e.target.value)}
+            required
+            rows={3}
+            onPaste={handleTextPaste}
+            onDrop={handleTextDrop}
+          />
+          <TextAreaField
+            label="이 데이터를 통해 무엇을 알고 싶나요? (자신의 궁금증을 작성하세요)"
+            value={curiosityQuestion}
+            onChange={(e) => setCuriosityQuestion(e.target.value)}
+            required
+            rows={3}
+            onPaste={handleTextPaste}
+            onDrop={handleTextDrop}
+          />
+          <TextAreaField
+            label="분석 목적을 한 문장으로 작성하세요."
+            hint='👉 (예: "○○와 ○○의 관계를 분석하고자 한다")'
+            value={analysisPurposeOneSentence}
+            onChange={(e) => setAnalysisPurposeOneSentence(e.target.value)}
+            required
+            rows={2}
+            onPaste={handleTextPaste}
+            onDrop={handleTextDrop}
+          />
         </div>
 
-        {/* Ⅱ. 데이터 분석 및 시각화 */}
         <div className="space-y-6 bg-gray-50 p-6 rounded-xl border border-gray-200">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Ⅱ. 데이터 분석 및 시각화</h2>
-          <TextAreaField label="7. 관심있는 변수의 기초 통계값(평균, 중앙값, 최댓값, 최솟값 등)을 정리하여 작성하세요" value={basicStats} onChange={(e) => setBasicStats(e.target.value)} rows={4} onPaste={handleTextPaste} onDrop={handleTextDrop} />
-          <TextAreaField label="8. 위 통계값을 바탕으로 데이터의 특징을 3가지 이상 설명하세요" value={dataFeatures} onChange={(e) => setDataFeatures(e.target.value)} rows={4} onPaste={handleTextPaste} onDrop={handleTextDrop} />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <TextAreaField label="9. 어떤 시각화 그래프를 사용했나요?" value={visualizationGraph} onChange={(e) => setVisualizationGraph(e.target.value)} rows={2} onPaste={handleTextPaste} onDrop={handleTextDrop} />
-            <TextAreaField label="10. 그래프를 통해 알 수 있는 내용은 무엇인가요?" value={graphInterpretation} onChange={(e) => setGraphInterpretation(e.target.value)} rows={3} onPaste={handleTextPaste} onDrop={handleTextDrop} />
+          <h2 className="text-xl font-bold text-gray-800 mb-2">② 분석기법 선정 (데이터 해석 방법 선택)</h2>
+          <div>
+            <p className="text-sm font-semibold text-gray-700 mb-2">
+              다음 중 자신의 분석 목적에 가장 적절한 분석 방법을 선택하세요 <span className="text-red-500">*</span>
+            </p>
+            <div className="space-y-2">
+              {ANALYSIS_TECHNIQUE_OPTIONS.map((opt) => (
+                <label
+                  key={opt.value}
+                  className={`flex items-center gap-3 cursor-pointer rounded-lg border bg-white px-4 py-3 text-sm text-gray-800 hover:border-orange-300 ${
+                    analysisTechnique === opt.value ? 'border-orange-500 bg-orange-50/60' : 'border-gray-200'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="analysisTechnique"
+                    value={opt.value}
+                    checked={analysisTechnique === opt.value}
+                    onChange={() => setAnalysisTechnique(opt.value)}
+                    className="text-orange-600 focus:ring-orange-500"
+                  />
+                  <span>{opt.label}</span>
+                </label>
+              ))}
+            </div>
           </div>
+          <TextAreaField
+            label="위 분석 방법을 선택한 이유를 작성하세요."
+            hint="👉 (데이터의 특성과 분석 목적을 함께 설명)"
+            value={analysisTechniqueReason}
+            onChange={(e) => setAnalysisTechniqueReason(e.target.value)}
+            required
+            rows={4}
+            onPaste={handleTextPaste}
+            onDrop={handleTextDrop}
+          />
         </div>
 
-        {/* Ⅲ. 결론 */}
         <div className="space-y-6 bg-gray-50 p-6 rounded-xl border border-gray-200">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Ⅲ. 결론</h2>
-          <TextAreaField label="11. 분석을 통해 무엇을 알게 되었으며, 최종 결론은 무엇인가요?" value={conclusion} onChange={(e) => setConclusion(e.target.value)} required rows={5} onPaste={handleTextPaste} onDrop={handleTextDrop} />
+          <h2 className="text-xl font-bold text-gray-800 mb-2">③ 기초 통계 분석</h2>
+          <TextAreaField
+            label="선택한 변수의 기초 통계값(평균, 중앙값, 최댓값, 최솟값 등)을 정리하여 작성하세요."
+            value={basicStats}
+            onChange={(e) => setBasicStats(e.target.value)}
+            required
+            rows={4}
+            onPaste={handleTextPaste}
+            onDrop={handleTextDrop}
+          />
+          <TextAreaField
+            label="위 통계값을 바탕으로 데이터의 특징을 3가지 이상 설명하세요."
+            hint="👉 (반드시 수치를 포함하여 설명)"
+            value={dataFeaturesThreePlus}
+            onChange={(e) => setDataFeaturesThreePlus(e.target.value)}
+            required
+            rows={5}
+            onPaste={handleTextPaste}
+            onDrop={handleTextDrop}
+          />
         </div>
 
-        {/* Ⅳ. 실습 파일 제출 */}
-        <h2 className="text-xl font-bold text-gray-800 mt-8 mb-4">Ⅳ. 실습 파일 제출</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="border-2 border-dashed border-gray-300 rounded-xl p-4 flex flex-col items-center justify-center text-center bg-gray-50 hover:bg-gray-100 transition-colors">
-            <div className="bg-blue-100 text-blue-600 p-3 rounded-full mb-3">
-              <ImageIcon size={24} />
-            </div>
-            <h3 className="font-bold text-gray-700 mb-1">워크플로우 캡처</h3>
-            <p className="text-xs text-gray-500 mb-3">화면 캡처 후,<br/><strong className="text-gray-700">Ctrl + V</strong>로 붙여넣기</p>
-          </div>
-
-          <div className="border-2 border-dashed border-gray-300 rounded-xl p-4 flex flex-col items-center justify-center text-center bg-gray-50 hover:bg-gray-100 transition-colors">
-            <div className="bg-green-100 text-green-600 p-3 rounded-full mb-3">
-              <Upload size={24} />
-            </div>
-            <h3 className="font-bold text-gray-700 mb-1">데이터 파일 (.csv 등)</h3>
-            <p className="text-xs text-gray-500 mb-3">분석에 사용한<br/>원본 데이터 파일</p>
-            <button 
-              type="button" onClick={() => dataFileInputRef.current.click()}
-              className="px-3 py-1.5 bg-white border border-gray-300 rounded-lg shadow-sm text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-            >
-              파일 선택
-            </button>
-            <input type="file" multiple className="hidden" ref={dataFileInputRef} onChange={handleDataFileChange} />
-          </div>
-
-          <div className="border-2 border-dashed border-orange-300 rounded-xl p-4 flex flex-col items-center justify-center text-center bg-orange-50 hover:bg-orange-100 transition-colors">
-            <div className="bg-orange-100 text-orange-600 p-3 rounded-full mb-3">
-              <FileBox size={24} />
-            </div>
-            <h3 className="font-bold text-gray-700 mb-1">오렌지3 파일 (.ows)</h3>
-            <p className="text-xs text-gray-500 mb-3">저장한 오렌지3<br/>워크플로우 파일</p>
-            <button 
-              type="button" onClick={() => orangeFileInputRef.current.click()}
-              className="px-3 py-1.5 bg-white border border-orange-300 rounded-lg shadow-sm text-xs font-medium text-gray-700 hover:bg-orange-50 transition-colors"
-            >
-              파일 선택
-            </button>
-            <input type="file" multiple accept=".ows" className="hidden" ref={orangeFileInputRef} onChange={handleOrangeFileChange} />
-          </div>
+        <div className="space-y-6 bg-gray-50 p-6 rounded-xl border border-gray-200">
+          <h2 className="text-xl font-bold text-gray-800 mb-2">④ 시각화 및 해석</h2>
+          <TextAreaField
+            label="어떤 그래프를 사용했나요?"
+            value={chartUsed}
+            onChange={(e) => setChartUsed(e.target.value)}
+            required
+            rows={2}
+            onPaste={handleTextPaste}
+            onDrop={handleTextDrop}
+          />
+          <TextAreaField
+            label="해당 그래프를 선택한 이유는 무엇인가요?"
+            value={chartSelectionReason}
+            onChange={(e) => setChartSelectionReason(e.target.value)}
+            required
+            rows={3}
+            onPaste={handleTextPaste}
+            onDrop={handleTextDrop}
+          />
+          <TextAreaField
+            label="그래프를 통해 알 수 있는 내용은 무엇인가요?"
+            hint='👉 (단순 설명이 아니라 "해석" 작성)'
+            value={chartInterpretation}
+            onChange={(e) => setChartInterpretation(e.target.value)}
+            required
+            rows={4}
+            onPaste={handleTextPaste}
+            onDrop={handleTextDrop}
+          />
         </div>
 
-        {(images.length > 0 || dataFiles.length > 0 || orangeFiles.length > 0) && (
-          <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 mt-4">
-            <h4 className="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
-              <FileText size={16} /> 첨부 목록
-            </h4>
-            <div className="space-y-4">
-              {images.length > 0 && (
-                <div>
-                  <h5 className="text-xs font-bold text-gray-500 mb-2">이미지</h5>
-                  <div className="flex gap-3 overflow-x-auto pb-2">
-                    {images.map((img, idx) => (
-                      <div key={`img-${idx}`} className="relative group flex-shrink-0">
-                        <img src={img.url} alt="Pasted" className="h-16 w-24 object-cover rounded-lg border border-gray-300 shadow-sm" />
-                        <button 
-                          type="button" onClick={() => removeImage(idx)}
-                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-md opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <X size={12} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {dataFiles.length > 0 && (
-                <div>
-                  <h5 className="text-xs font-bold text-gray-500 mb-1">데이터 파일</h5>
-                  <ul className="space-y-1">
-                    {dataFiles.map((file, idx) => (
-                      <li key={`dfile-${idx}`} className="flex items-center justify-between bg-white p-1.5 px-2 rounded-lg border border-gray-200 shadow-sm text-xs">
-                        <span className="truncate text-gray-600 flex-1">{file.name}</span>
-                        <span className="text-gray-400 ml-2 mr-2">{(file.size / 1024).toFixed(1)} KB</span>
-                        <button type="button" onClick={() => removeDataFile(idx)} className="text-red-400 hover:text-red-600 transition-colors">
-                          <X size={14} />
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              {orangeFiles.length > 0 && (
-                <div>
-                  <h5 className="text-xs font-bold text-gray-500 mb-1">오렌지3 파일</h5>
-                  <ul className="space-y-1">
-                    {orangeFiles.map((file, idx) => (
-                      <li key={`ofile-${idx}`} className="flex items-center justify-between bg-white p-1.5 px-2 rounded-lg border border-orange-200 shadow-sm text-xs">
-                        <span className="truncate text-gray-600 flex-1">{file.name}</span>
-                        <span className="text-gray-400 ml-2 mr-2">{(file.size / 1024).toFixed(1)} KB</span>
-                        <button type="button" onClick={() => removeOrangeFile(idx)} className="text-red-400 hover:text-red-600 transition-colors">
-                          <X size={14} />
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
+        <div className="space-y-6 bg-gray-50 p-6 rounded-xl border border-gray-200">
+          <h2 className="text-xl font-bold text-gray-800 mb-2">⑤ 분석 결과 및 검증 (핵심)</h2>
+          <TextAreaField
+            label="분석을 통해 무엇을 알게 되었으며, 최종 결론은 무엇인가요?"
+            value={finalConclusion}
+            onChange={(e) => setFinalConclusion(e.target.value)}
+            required
+            rows={5}
+            onPaste={handleTextPaste}
+            onDrop={handleTextDrop}
+          />
+          <TextAreaField
+            label="이 결과를 해석할 때 주의해야 할 점은 무엇인가요?"
+            hint="👉 (예: 상관관계와 인과관계 구분, 데이터 한계, 이상치 영향 등)"
+            value={interpretationCaveats}
+            onChange={(e) => setInterpretationCaveats(e.target.value)}
+            required
+            rows={4}
+            onPaste={handleTextPaste}
+            onDrop={handleTextDrop}
+          />
+        </div>
 
-        <button 
-          type="submit" disabled={isSubmitting}
+        <div className="mt-8 rounded-xl border border-orange-200 bg-orange-50 px-5 py-4 text-center text-gray-800">
+          <p className="text-base font-semibold">파일은 리로스쿨에 제출하세요.</p>
+        </div>
+
+        <button
+          type="submit"
+          disabled={isSubmitting}
           className={`w-full py-4 text-white text-lg font-bold rounded-xl shadow-lg transition-all active:scale-[0.98] ${
             isSubmitting ? 'bg-orange-400 cursor-not-allowed' : 'bg-orange-600 hover:bg-orange-700'
           }`}
@@ -563,6 +591,71 @@ function StudentForm({ user, showToast }) {
           {isSubmitting ? '제출 중...' : '최종 제출하기'}
         </button>
       </form>
+    </div>
+  );
+}
+
+function SubmissionDetailModal({ sub, onClose }) {
+  const td = normalizeTextData(sub.textData);
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div className="sticky top-0 bg-white border-b border-gray-100 p-4 flex justify-between items-center z-10">
+          <h3 className="text-lg font-bold text-gray-800">
+            {sub.studentId} {sub.studentName}
+            {sub.studentClass ? ` (${sub.studentClass})` : ''} — 제출 내용
+          </h3>
+          <button type="button" onClick={onClose} className="p-1 hover:bg-gray-100 rounded-full">
+            <X size={24} className="text-gray-500" />
+          </button>
+        </div>
+
+        <div className="p-6 space-y-8 text-sm">
+          <section>
+            <h4 className="text-lg font-bold text-gray-800 mb-3">① 데이터 이해 + 분석 목적</h4>
+            <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-4">
+              <div><span className="font-semibold">선택한 데이터의 이름</span><p className="whitespace-pre-wrap mt-1">{td.dataName}</p></div>
+              <div><span className="font-semibold">데이터 내용 (주요 변수 포함)</span><p className="whitespace-pre-wrap mt-1">{td.dataContentAndVariables}</p></div>
+              <div><span className="font-semibold">범주형·수치형 변수</span><p className="whitespace-pre-wrap mt-1">{td.categoricalNumericVariables}</p></div>
+              <div><span className="font-semibold">궁금증</span><p className="whitespace-pre-wrap mt-1">{td.curiosityQuestion}</p></div>
+              <div><span className="font-semibold">분석 목적 (한 문장)</span><p className="whitespace-pre-wrap mt-1">{td.analysisPurposeOneSentence}</p></div>
+            </div>
+          </section>
+
+          <section>
+            <h4 className="text-lg font-bold text-gray-800 mb-3">② 분석기법 선정</h4>
+            <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-4">
+              <div><span className="font-semibold">선택한 분석 방법</span><p className="whitespace-pre-wrap mt-1">{td.analysisTechniqueLabel || '—'}</p></div>
+              <div><span className="font-semibold">선택 이유</span><p className="whitespace-pre-wrap mt-1">{td.analysisTechniqueReason}</p></div>
+            </div>
+          </section>
+
+          <section>
+            <h4 className="text-lg font-bold text-gray-800 mb-3">③ 기초 통계 분석</h4>
+            <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-4">
+              <div><span className="font-semibold">기초 통계값</span><p className="whitespace-pre-wrap mt-1">{td.basicStats}</p></div>
+              <div><span className="font-semibold">데이터 특징 (3가지 이상)</span><p className="whitespace-pre-wrap mt-1">{td.dataFeaturesThreePlus}</p></div>
+            </div>
+          </section>
+
+          <section>
+            <h4 className="text-lg font-bold text-gray-800 mb-3">④ 시각화 및 해석</h4>
+            <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-4">
+              <div><span className="font-semibold">사용한 그래프</span><p className="whitespace-pre-wrap mt-1">{td.chartUsed}</p></div>
+              <div><span className="font-semibold">그래프 선택 이유</span><p className="whitespace-pre-wrap mt-1">{td.chartSelectionReason}</p></div>
+              <div><span className="font-semibold">그래프 해석</span><p className="whitespace-pre-wrap mt-1">{td.chartInterpretation}</p></div>
+            </div>
+          </section>
+
+          <section>
+            <h4 className="text-lg font-bold text-gray-800 mb-3">⑤ 분석 결과 및 검증</h4>
+            <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-4">
+              <div><span className="font-semibold">최종 결론</span><p className="whitespace-pre-wrap mt-1">{td.finalConclusion}</p></div>
+              <div><span className="font-semibold">해석 시 주의점</span><p className="whitespace-pre-wrap mt-1">{td.interpretationCaveats}</p></div>
+            </div>
+          </section>
+        </div>
+      </div>
     </div>
   );
 }
@@ -645,13 +738,14 @@ function TeacherDashboard({ user, showToast }) {
       return;
     }
 
-    let csvContent = "\uFEFF학번,이름,제출일시,데이터이름/출처,분석목적,결론\n";
+    let csvContent = "\uFEFF학번,이름,반,제출일시,데이터이름,분석목적(한문장),최종결론\n";
 
-    submissions.forEach(sub => {
+    submissions.forEach((sub) => {
       const date = formatDate(sub.timestamp);
-      const td = sub.textData || {};
-      const safe = (text) => text ? `"${text.replace(/"/g, '""').replace(/\n/g, ' ')}"` : "";
-      csvContent += `${sub.studentId},${sub.studentName},${date},${safe(td.dataNameOrigin)},${safe(td.analysisPurpose)},${safe(td.conclusion)}\n`;
+      const td = normalizeTextData(sub.textData);
+      const safe = (text) => (text ? `"${String(text).replace(/"/g, '""').replace(/\n/g, ' ')}"` : '');
+      const ban = sub.studentClass ?? '';
+      csvContent += `${sub.studentId},${sub.studentName},${ban},${date},${safe(td.dataName)},${safe(td.analysisPurposeOneSentence)},${safe(td.finalConclusion)}\n`;
     });
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -694,8 +788,8 @@ function TeacherDashboard({ user, showToast }) {
                 <tr className="bg-gray-50 border-b border-gray-200 text-gray-600 text-sm">
                   <th className="p-4 font-semibold">학번</th>
                   <th className="p-4 font-semibold">이름</th>
+                  <th className="p-4 font-semibold">반</th>
                   <th className="p-4 font-semibold">제출일시</th>
-                  <th className="p-4 font-semibold">첨부</th>
                   <th className="p-4 font-semibold text-center">상세보기</th>
                 </tr>
               </thead>
@@ -704,14 +798,9 @@ function TeacherDashboard({ user, showToast }) {
                   <tr key={sub.id} className="hover:bg-gray-50 transition-colors">
                     <td className="p-4 font-medium text-gray-800">{sub.studentId}</td>
                     <td className="p-4">{sub.studentName}</td>
+                    <td className="p-4 text-gray-600">{sub.studentClass ?? '—'}</td>
                     <td className="p-4 text-gray-500 text-sm">
                       <span className="flex items-center gap-1"><Clock size={14} /> {formatDate(sub.timestamp)}</span>
-                    </td>
-                    <td className="p-4">
-                      <div className="flex gap-2">
-                        {sub.images?.length > 0 && <span className="px-2 py-1 bg-blue-50 text-blue-600 rounded text-xs">사진 {sub.images.length}</span>}
-                        {(sub.dataFiles?.length > 0 || sub.orangeFiles?.length > 0) && <span className="px-2 py-1 bg-green-50 text-green-600 rounded text-xs">파일 {(sub.dataFiles?.length || 0) + (sub.orangeFiles?.length || 0)}</span>}
-                      </div>
                     </td>
                     <td className="p-4 text-center">
                       <button 
@@ -731,117 +820,7 @@ function TeacherDashboard({ user, showToast }) {
 
       {/* 과제 상세내용 모달 */}
       {selectedSub && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl">
-            <div className="sticky top-0 bg-white border-b border-gray-100 p-4 flex justify-between items-center z-10">
-              <h3 className="text-lg font-bold text-gray-800">
-                {selectedSub.studentId} {selectedSub.studentName}의 과제
-              </h3>
-              <button onClick={() => setSelectedSub(null)} className="p-1 hover:bg-gray-100 rounded-full">
-                <X size={24} className="text-gray-500" />
-              </button>
-            </div>
-            
-            <div className="p-6 space-y-8">
-              {/* 작성 내용 */}
-              {selectedSub.textData && (
-                <div className="space-y-6">
-                  <div>
-                    <h4 className="text-lg font-bold text-gray-800 mb-2">Ⅰ. 데이터 이해 및 분석 설계</h4>
-                    <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-4 text-sm text-gray-800">
-                      <div><span className="font-semibold">1. 데이터 이름/출처:</span> <p className="whitespace-pre-wrap mt-1">{selectedSub.textData.dataNameOrigin}</p></div>
-                      <div><span className="font-semibold">2. 데이터 내용:</span> <p className="whitespace-pre-wrap mt-1">{selectedSub.textData.dataDescription}</p></div>
-                      <div><span className="font-semibold">3. 분석 질문:</span> <p className="whitespace-pre-wrap mt-1">{selectedSub.textData.analysisQuestion}</p></div>
-                      <div><span className="font-semibold">4. 분석 목적:</span> <p className="whitespace-pre-wrap mt-1">{selectedSub.textData.analysisPurpose}</p></div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div><span className="font-semibold">5. 분석 방법:</span> <p className="whitespace-pre-wrap mt-1">{selectedSub.textData.analysisMethod}</p></div>
-                        <div><span className="font-semibold">6. 선택 이유:</span> <p className="whitespace-pre-wrap mt-1">{selectedSub.textData.analysisReason}</p></div>
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-bold text-gray-800 mb-2">Ⅱ. 데이터 분석 및 시각화</h4>
-                    <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 space-y-4 text-sm text-gray-800">
-                      <div><span className="font-semibold">7. 기초 통계값:</span> <p className="whitespace-pre-wrap mt-1">{selectedSub.textData.basicStats}</p></div>
-                      <div><span className="font-semibold">8. 데이터 특징:</span> <p className="whitespace-pre-wrap mt-1">{selectedSub.textData.dataFeatures}</p></div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div><span className="font-semibold">9. 시각화 그래프:</span> <p className="whitespace-pre-wrap mt-1">{selectedSub.textData.visualizationGraph}</p></div>
-                        <div><span className="font-semibold">10. 그래프 해석:</span> <p className="whitespace-pre-wrap mt-1">{selectedSub.textData.graphInterpretation}</p></div>
-                      </div>
-                    </div>
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-bold text-gray-800 mb-2">Ⅲ. 결론</h4>
-                    <div className="bg-gray-50 p-4 rounded-xl border border-gray-200 text-sm text-gray-800">
-                      <div><span className="font-semibold">11. 최종 결론:</span> <p className="whitespace-pre-wrap mt-1">{selectedSub.textData.conclusion}</p></div>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* 이미지 갤러리 */}
-              {selectedSub.images && selectedSub.images.length > 0 && (
-                <div>
-                  <h4 className="text-sm font-bold text-gray-500 uppercase mb-2">캡처 이미지</h4>
-                  <div className="grid grid-cols-2 gap-3">
-                    {selectedSub.images.map((img, idx) => {
-                      const src = typeof img === 'string' ? img : img?.url;
-                      if (!src) return null;
-                      return (
-                        <img key={idx} src={src} alt={`학생 제출물 ${idx}`} className="w-full rounded-lg border border-gray-200 shadow-sm" />
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {/* 첨부 파일 목록 */}
-              {(selectedSub.dataFiles?.length > 0 || selectedSub.orangeFiles?.length > 0) && (
-                <div>
-                  <h4 className="text-sm font-bold text-gray-500 uppercase mb-2">첨부 파일</h4>
-                  <div className="space-y-2">
-                    {selectedSub.dataFiles?.map((file, idx) => (
-                      <div key={`df-${idx}`} className="flex items-center gap-2 bg-green-50 p-2 rounded-lg border border-green-200">
-                        <FileText size={16} className="text-green-600 flex-shrink-0" />
-                        {file.url ? (
-                          <a
-                            href={file.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-sm font-medium text-green-800 truncate hover:underline min-w-0"
-                          >
-                            {file.name}
-                          </a>
-                        ) : (
-                          <span className="text-sm font-medium text-gray-700 truncate min-w-0">{file.name}</span>
-                        )}
-                        <span className="text-xs text-gray-400 ml-auto flex-shrink-0">{(file.size / 1024).toFixed(1)} KB</span>
-                      </div>
-                    ))}
-                    {selectedSub.orangeFiles?.map((file, idx) => (
-                      <div key={`of-${idx}`} className="flex items-center gap-2 bg-orange-50 p-2 rounded-lg border border-orange-200">
-                        <FileBox size={16} className="text-orange-600 flex-shrink-0" />
-                        {file.url ? (
-                          <a
-                            href={file.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-sm font-medium text-orange-800 truncate hover:underline min-w-0"
-                          >
-                            {file.name}
-                          </a>
-                        ) : (
-                          <span className="text-sm font-medium text-gray-700 truncate min-w-0">{file.name}</span>
-                        )}
-                        <span className="text-xs text-gray-400 ml-auto flex-shrink-0">{(file.size / 1024).toFixed(1)} KB</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+        <SubmissionDetailModal sub={selectedSub} onClose={() => setSelectedSub(null)} />
       )}
     </div>
   );
