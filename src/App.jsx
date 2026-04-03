@@ -264,6 +264,14 @@ function StudentForm({ showToast }) {
       </div>
 
       <form onSubmit={handleSubmit} className="p-8 space-y-8">
+        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950 leading-relaxed">
+          <p className="font-semibold text-amber-900 mb-1">📌 채점 안내</p>
+          <p>
+            각 문항은 단순 작성이 아니라{' '}
+            <span className="font-semibold">👉 &apos;데이터를 근거로 설명&apos;</span>해야 합니다. 수치 없이 작성하면 감점됩니다.
+          </p>
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
@@ -421,7 +429,7 @@ function StudentForm({ showToast }) {
         <div className="space-y-6 bg-gray-50 p-6 rounded-xl border border-gray-200">
           <h2 className="text-xl font-bold text-gray-800 mb-2">③ 기초 통계 분석</h2>
           <TextAreaField
-            label="선택한 변수의 기초 통계값(평균, 중앙값, 최댓값, 최솟값 등)을 정리하여 작성하세요."
+            label="선택한 변수의 기초 통계값(평균, 중앙값, 최댓값, 최솟값, 표준편차 등)을 정리하여 작성하세요."
             value={basicStats}
             onChange={(e) => setBasicStats(e.target.value)}
             required
@@ -430,8 +438,7 @@ function StudentForm({ showToast }) {
             onDrop={handleTextDrop}
           />
           <TextAreaField
-            label="위 통계값을 바탕으로 데이터의 특징을 3가지 이상 설명하세요."
-            hint="👉 (반드시 수치를 포함하여 설명)"
+            label="위 통계값을 바탕으로, 데이터의 특징을 수치 근거를 포함하여 3가지 이상 설명하세요."
             value={dataFeaturesThreePlus}
             onChange={(e) => setDataFeaturesThreePlus(e.target.value)}
             required
@@ -462,8 +469,7 @@ function StudentForm({ showToast }) {
             onDrop={handleTextDrop}
           />
           <TextAreaField
-            label="그래프를 통해 알 수 있는 내용은 무엇인가요?"
-            hint='👉 (단순 설명이 아니라 "해석" 작성)'
+            label="그래프를 통해 알 수 있는 내용을 ‘해석 중심’으로 작성하세요. (단순 설명 X)"
             value={chartInterpretation}
             onChange={(e) => setChartInterpretation(e.target.value)}
             required
