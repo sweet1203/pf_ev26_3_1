@@ -738,15 +738,63 @@ function TeacherDashboard({ user, showToast }) {
       return;
     }
 
-    let csvContent = "\uFEFF학번,이름,반,제출일시,데이터이름,분석목적(한문장),최종결론\n";
+    const csvCell = (v) => {
+      const s = v == null ? '' : String(v);
+      return `"${s.replace(/"/g, '""').replace(/\r\n|\r|\n/g, ' ')}"`;
+    };
 
+    const headers = [
+      '제출일시',
+      '학번',
+      '이름',
+      '반',
+      '①_선택한데이터이름',
+      '①_데이터내용_주요변수포함',
+      '①_범주형수치형변수',
+      '①_궁금증',
+      '①_분석목적_한문장',
+      '②_선택한분석방법',
+      '②_분석방법선택이유',
+      '③_기초통계값',
+      '③_데이터특징_3가지이상',
+      '④_사용그래프',
+      '④_그래프선택이유',
+      '④_그래프해석',
+      '⑤_최종결론',
+      '⑤_해석시주의점',
+    ];
+
+    const lines = [headers.join(',')];
     submissions.forEach((sub) => {
-      const date = formatDate(sub.timestamp);
       const td = normalizeTextData(sub.textData);
-      const safe = (text) => (text ? `"${String(text).replace(/"/g, '""').replace(/\n/g, ' ')}"` : '');
-      const ban = sub.studentClass ?? '';
-      csvContent += `${sub.studentId},${sub.studentName},${ban},${date},${safe(td.dataName)},${safe(td.analysisPurposeOneSentence)},${safe(td.finalConclusion)}\n`;
+      const technique = td.analysisTechniqueLabel || td.analysisTechnique || '';
+      lines.push(
+        [
+          formatDate(sub.timestamp),
+          sub.studentId,
+          sub.studentName,
+          sub.studentClass ?? '',
+          td.dataName,
+          td.dataContentAndVariables,
+          td.categoricalNumericVariables,
+          td.curiosityQuestion,
+          td.analysisPurposeOneSentence,
+          technique,
+          td.analysisTechniqueReason,
+          td.basicStats,
+          td.dataFeaturesThreePlus,
+          td.chartUsed,
+          td.chartSelectionReason,
+          td.chartInterpretation,
+          td.finalConclusion,
+          td.interpretationCaveats,
+        ]
+          .map(csvCell)
+          .join(',')
+      );
     });
+
+    const csvContent = `\uFEFF${lines.join('\n')}`;
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);

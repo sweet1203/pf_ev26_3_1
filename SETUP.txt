@@ -6,7 +6,7 @@
 [구글 스프레드시트 연동]
 - 앱스 스크립트 웹앱은 브라우저 보안(CORS) 때문에 일반 fetch로는 막히는 경우가 많습니다. 코드에서는 mode: no-cors 로 보냅니다.
 - 본인이 새로 배포한 웹앱이면 .env에 VITE_GOOGLE_SHEET_WEBHOOK_URL=배포한/exec 주소 를 넣고 npm run dev / build 를 다시 하세요.
-- 스크립트 예: function doPost(e) { const d = JSON.parse(e.postData.contents); ... 시트에 append ... }
+- POST 본문 JSON에는 studentId, studentName, studentClass, timestamp, textData(문항 전체 필드)가 포함됩니다. 시트에 열이 적게만 쌓인다면 앱스 스크립트에서 textData 안의 각 속성을 열로 펼쳐 appendRow 하도록 수정해야 합니다.
 - 웹앱 배포 시 "액세스할 수 있는 사용자"를 "모든 사용자"로 두어야 학생 브라우저에서 전송됩니다.
 
 [Firebase 콘솔에서 할 일]
