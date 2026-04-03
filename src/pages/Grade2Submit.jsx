@@ -5,7 +5,7 @@ import { getClientSubmissionMeta } from '../clientDeviceMeta.js';
 import { createTextGuards } from '../formGuards.js';
 import { postToGoogleSheet } from '../sheetSubmit.js';
 import { CLASS_OPTIONS_GRADE2, GOOGLE_SHEET_TAB_GRADE2 } from '../constants.js';
-import { parseFiveDigitStudentId } from '../validateStudentId.js';
+import { validateSubmissionIdentity } from '../validateStudentId.js';
 
 function buildTextDataPayload(state) {
   const {
@@ -61,9 +61,9 @@ export default function Grade2Submit() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const idCheck = parseFiveDigitStudentId(studentId);
-    if (!idCheck.ok) {
-      showToast(idCheck.message, 'error');
+    const identity = validateSubmissionIdentity(studentId, studentName, studentClass);
+    if (!identity.ok) {
+      showToast(identity.message, 'error');
       return;
     }
 
@@ -83,9 +83,9 @@ export default function Grade2Submit() {
         gradeLevel: 2,
         subject: '정보',
         sheetName: GOOGLE_SHEET_TAB_GRADE2,
-        studentId: idCheck.id,
-        studentName,
-        studentClass,
+        studentId: identity.id,
+        studentName: identity.name,
+        studentClass: identity.studentClass,
         timestamp: new Date(ts).toLocaleString('ko-KR'),
         ...getClientSubmissionMeta(),
         textData,
@@ -128,7 +128,7 @@ export default function Grade2Submit() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">
-                학번을 작성하세요.
+                학번을 작성하세요. <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -146,7 +146,7 @@ export default function Grade2Submit() {
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">
-                이름을 작성하세요.
+                이름을 작성하세요. <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -163,7 +163,7 @@ export default function Grade2Submit() {
 
           <div>
             <p className="text-sm font-semibold text-gray-700 mb-2">
-              반을 작성하세요.
+              반을 작성하세요. <span className="text-red-500">*</span>
               <span className="font-normal text-gray-500 ml-1">(정보 A, C, D, E 중 하나)</span>
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
