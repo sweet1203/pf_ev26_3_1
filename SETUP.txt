@@ -1,26 +1,19 @@
 [로컬 실행]
 1. Node.js 설치 후 이 폴더에서: npm install
-2. env.example을 복사해 .env 파일을 만들고 Firebase 웹 앱 설정값을 VITE_FIREBASE_* 로 입력
-3. npm run dev → 브라우저에서 표시된 주소로 접속
+2. (선택) .env에 VITE_GOOGLE_SHEET_WEBHOOK_URL=본인 웹앱 /exec 주소
+3. npm run dev → 브라우저 주소로 접속
 
-[구글 스프레드시트 연동]
-- 앱스 스크립트 웹앱은 브라우저 보안(CORS) 때문에 일반 fetch로는 막히는 경우가 많습니다. 코드에서는 mode: no-cors 로 보냅니다.
-- 본인이 새로 배포한 웹앱이면 .env에 VITE_GOOGLE_SHEET_WEBHOOK_URL=배포한/exec 주소 를 넣고 npm run dev / build 를 다시 하세요.
-- POST 본문 JSON에는 studentId, studentName, studentClass, timestamp, textData(문항 전체 필드)가 포함됩니다. 시트에 열이 적게만 쌓인다면 앱스 스크립트에서 textData 안의 각 속성을 열로 펼쳐 appendRow 하도록 수정해야 합니다.
-- 웹앱 배포 시 "액세스할 수 있는 사용자"를 "모든 사용자"로 두어야 학생 브라우저에서 전송됩니다.
+[제출 동작]
+- 학생이 제출하면 JSON이 구글 앱스 스크립트 웹앱(POST)으로만 전송됩니다. Firebase는 사용하지 않습니다.
+- 앱스 스크립트 doPost에서 시트에 appendRow 하도록 연결하세요. (본문: e.postData.contents → JSON.parse)
 
-[Firebase 콘솔에서 할 일]
-1. 프로젝트 생성 → Authentication에서 익명 로그인 사용 설정
-2. Firestore 데이터베이스 만들기
-3. 프로젝트 설정(톱니바퀴) → 일반 → 내 앱에서 웹 앱 추가 후 설정 객체의 값을 .env에 붙여넣기
-4. Firebase CLI: npm install -g firebase-tools → firebase login → 이 폴더에서 firebase use --add 로 프로젝트 연결 후 .firebaserc의 default를 실제 프로젝트 ID로 수정
-5. 규칙 배포: firebase deploy --only firestore:rules
-6. 웹 빌드 후 호스팅 배포: npm run build → firebase deploy --only hosting
+[배포]
+- 정적 호스팅만 필요합니다: npm run build → dist 폴더를 Netlify, GitHub Pages, 학교 서버 등에 올리면 됩니다.
+- 빌드 시 웹앱 URL을 넣으려면 배포 전 .env에 VITE_GOOGLE_SHEET_WEBHOOK_URL 설정 후 build 하세요.
 
 [GitHub]
-1. GitHub에 새 저장소 생성
-2. git init → git add . → git commit → remote 추가 후 push
-3. .env는 비밀이므로 Git에 올리지 마세요 (.gitignore에 포함됨)
+- .env는 Git에 올리지 마세요 (.gitignore)
 
 [참고]
-앱 소스의 진입점은 src/App.jsx 입니다. 루트의 수행평가제출.html은 이전 단일 파일 복사본으로, 브라우저에서 직접 열어도 동작하지 않습니다.
+- 소스: src/App.jsx
+- 루트 수행평가제출.html은 안내용이며, 실제 앱은 npm run dev / build 결과입니다.
