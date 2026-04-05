@@ -1,28 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, BookOpen, Download, FileSpreadsheet, GraduationCap } from 'lucide-react';
 import { DATASET_CATALOG, datasetFileUrl } from '../datasetCatalog.js';
 
 export default function DatasetGuide() {
   const [grade, setGrade] = useState(2);
-  const [query, setQuery] = useState('');
-
-  const items = useMemo(() => {
-    const raw = query.trim();
-    const q = raw.toLowerCase();
-    if (!q) return DATASET_CATALOG;
-    const asNum = parseInt(raw, 10);
-    if (!Number.isNaN(asNum) && String(asNum) === raw) {
-      return DATASET_CATALOG.filter((d) => d.num === asNum);
-    }
-    return DATASET_CATALOG.filter(
-      (d) =>
-        d.title.toLowerCase().includes(q) ||
-        d.blurb.toLowerCase().includes(q) ||
-        d.file.toLowerCase().includes(q) ||
-        `${d.num}번`.includes(raw),
-    );
-  }, [query]);
 
   const statsKey = grade === 2 ? 'g2' : 'g3';
   const submitPath = grade === 2 ? '/grade2' : '/grade3';
@@ -102,28 +84,13 @@ export default function DatasetGuide() {
               </>
             )}
           </p>
-          <div className="mt-4">
-            <label htmlFor="ds-search" className="sr-only">
-              데이터셋 검색
-            </label>
-            <input
-              id="ds-search"
-              type="search"
-              placeholder="이름·설명·파일명으로 검색…"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              className={`w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-800 placeholder:text-gray-400 focus:ring-2 focus:ring-offset-0 focus:outline-none text-sm ${
-                grade === 2 ? 'focus:ring-teal-700' : 'focus:ring-orange-500'
-              }`}
-            />
-          </div>
         </div>
 
         <div className="p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white">
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <FileSpreadsheet size={18} className="text-gray-500" />
             <span>
-              총 <strong className="text-gray-900">{items.length}</strong>개 (1~20번)
+              총 <strong className="text-gray-900">{DATASET_CATALOG.length}</strong>개 (1~20번)
             </span>
           </div>
           <Link
@@ -136,7 +103,7 @@ export default function DatasetGuide() {
       </div>
 
       <ul className="space-y-4">
-        {items.map((d) => {
+        {DATASET_CATALOG.map((d) => {
           const st = d[statsKey];
           const href = datasetFileUrl(grade, d.file);
           return (
@@ -152,6 +119,14 @@ export default function DatasetGuide() {
                       {d.title}
                     </h2>
                     <p className="mt-2 text-sm text-gray-600 leading-relaxed">{d.blurb}</p>
+                    {d.source ? (
+                      <div className="mt-3 rounded-lg bg-slate-50 border border-slate-100 px-3 py-2.5">
+                        <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500 mb-1">
+                          출처·원본·라이선스 안내
+                        </p>
+                        <p className="text-xs text-slate-700 leading-relaxed">{d.source}</p>
+                      </div>
+                    ) : null}
                     <p className="mt-3 text-xs text-gray-500 font-mono break-all">{d.file}</p>
                     <p className="mt-2 text-xs text-gray-500">
                       약 <strong className="text-gray-700">{st.rows.toLocaleString()}</strong>행 ·{' '}
@@ -175,15 +150,8 @@ export default function DatasetGuide() {
         })}
       </ul>
 
-      {items.length === 0 && (
-        <p className="text-center text-gray-500 py-12 text-sm">검색 결과가 없습니다.</p>
-      )}
-
       <p className="mt-10 text-center text-xs text-gray-500 leading-relaxed px-2">
-        데이터는 교육 목적으로 제공되며, 출처·라이선스는 각 원본 데이터셋을 따릅니다. 재생성:{' '}
-        <code className="bg-gray-100 px-1.5 py-0.5 rounded text-gray-700">python scripts/prepare_datasets_by_grade.py</code>{' '}
-        후{' '}
-        <code className="bg-gray-100 px-1.5 py-0.5 rounded text-gray-700">node scripts/syncPublicDataset.mjs</code>
+        데이터는 교육 목적으로 제공되며, 출처·라이선스는 각 원본 데이터셋을 따릅니다.
       </p>
     </div>
   );
