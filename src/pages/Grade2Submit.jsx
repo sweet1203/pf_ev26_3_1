@@ -244,7 +244,7 @@ export default function Grade2Submit() {
         <div className="space-y-6 bg-gray-50 p-6 rounded-xl border border-gray-200">
           <h2 className="text-xl font-bold text-gray-800 mb-2">③ 데이터 해석 (핵심)</h2>
           <TextAreaField
-            label="그래프를 바탕으로 데이터의 변화 추이, 특징, 미래 예측, 사회적 의미를 담아 작성하세요."
+            label="그래프를 바탕으로 데이터의 변화 추이, 특징, 미래 예측, 사회적 의미를 포함하여 5문장 이상의 완성된 글로 작성하세요."
             value={dataInterpretation}
             onChange={(e) => setDataInterpretation(e.target.value)}
             rows={10}
