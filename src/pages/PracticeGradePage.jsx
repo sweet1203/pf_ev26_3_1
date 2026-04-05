@@ -5,7 +5,16 @@ import { DATASET_CATALOG, datasetFileUrl } from '../datasetCatalog.js';
 /**
  * 연습용 전용: 본 사이트 다른 경로로 이동하는 링크 없음. 제출은 Google 폼으로만 연결.
  */
-export default function PracticeGradePage({ grade, formUrl, heroEyebrow, heroTitle, heroDescription }) {
+export default function PracticeGradePage({
+  grade,
+  formUrl,
+  heroEyebrow,
+  heroTitle,
+  heroDescription,
+  howToTitle,
+  howToSteps,
+  howToNote,
+}) {
   const statsKey = grade === 2 ? 'g2' : 'g3';
   const accentBtn =
     grade === 2
@@ -23,8 +32,10 @@ export default function PracticeGradePage({ grade, formUrl, heroEyebrow, heroTit
         className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950 leading-relaxed"
         role="status"
       >
-        <strong className="font-semibold">연습 전용 페이지입니다.</strong> 아래 데이터로 분석·작성 연습을 한 뒤, 제출은 이
-        페이지의 Google 폼 버튼으로만 진행하세요. 본 수행평가 공식 제출은 학교 안내에 따릅니다.
+        <strong className="font-semibold">연습 전용 페이지입니다.</strong> 이 주소로만 들어온 페이지이며, 메인 제출
+        사이트와는 따로 둔 연습용입니다. 아래에서 CSV를 받아 분석·작성 연습을 한 뒤, 제출은{' '}
+        <strong>이 페이지의 「연습 제출 (Google 폼)」</strong> 버튼으로만 하면 됩니다. 본 수행평가 공식 제출(글·파일)은
+        담임·과목 선생님 안내를 따르세요.
       </div>
 
       <div className={`rounded-2xl shadow-xl overflow-hidden border mb-8 bg-white ${borderCard}`}>
@@ -75,6 +86,25 @@ export default function PracticeGradePage({ grade, formUrl, heroEyebrow, heroTit
           </a>
         </div>
       </div>
+
+      <section
+        className={`mb-8 rounded-2xl border bg-white p-5 sm:p-6 shadow-sm ${
+          grade === 2 ? 'border-teal-100' : 'border-orange-100'
+        }`}
+        aria-labelledby="practice-howto-heading"
+      >
+        <h2 id="practice-howto-heading" className="text-base font-bold text-gray-900 mb-3">
+          {howToTitle}
+        </h2>
+        <ol className="list-decimal pl-5 space-y-2.5 text-sm text-gray-700 leading-relaxed">
+          {howToSteps.map((step, i) => (
+            <li key={i}>{step}</li>
+          ))}
+        </ol>
+        {howToNote ? (
+          <p className="mt-4 text-xs sm:text-sm text-gray-600 leading-relaxed border-t border-gray-100 pt-4">{howToNote}</p>
+        ) : null}
+      </section>
 
       <ul className="space-y-4">
         {DATASET_CATALOG.map((d) => {
