@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Database } from 'lucide-react';
+import { BookOpen, Database } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -37,6 +37,25 @@ export default function Home() {
           <Database size={18} className="text-slate-600" aria-hidden />
           데이터셋 안내 · 다운로드
         </Link>
+        <div className="pt-2 border-t border-slate-200 space-y-2">
+          <p className="text-xs font-semibold text-slate-500 text-center">수행평가 진행 안내 (Orange 3)</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <Link
+              to="/manual/grade2"
+              className="flex items-center justify-center gap-2 py-3 px-4 text-center text-sm font-semibold rounded-xl border border-teal-200 bg-teal-50 text-teal-900 hover:bg-teal-100 transition-colors"
+            >
+              <BookOpen size={16} aria-hidden />
+              2학년 안내 매뉴얼
+            </Link>
+            <Link
+              to="/manual/grade3"
+              className="flex items-center justify-center gap-2 py-3 px-4 text-center text-sm font-semibold rounded-xl border border-orange-200 bg-orange-50 text-orange-900 hover:bg-orange-100 transition-colors"
+            >
+              <BookOpen size={16} aria-hidden />
+              3학년 안내 매뉴얼
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );
