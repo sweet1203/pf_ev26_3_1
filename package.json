@@ -4,7 +4,9 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "sync-dataset": "node scripts/syncPublicDataset.mjs",
+    "dev": "node scripts/syncPublicDataset.mjs && vite",
+    "prebuild": "node scripts/syncPublicDataset.mjs",
     "build": "vite build",
     "preview": "vite preview"
   },

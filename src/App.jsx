@@ -4,6 +4,7 @@ import { AlertCircle, CheckCircle } from 'lucide-react';
 import Home from './pages/Home.jsx';
 import Grade3Submit from './pages/Grade3Submit.jsx';
 import Grade2Submit from './pages/Grade2Submit.jsx';
+import DatasetGuide from './pages/DatasetGuide.jsx';
 
 function Layout() {
   const [toast, setToast] = useState(null);
@@ -52,6 +53,7 @@ export default function App() {
     <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
+        <Route path="/datasets" element={<DatasetGuide />} />
         <Route path="/grade3" element={<Grade3Submit />} />
         <Route path="/grade2" element={<Grade2Submit />} />
       </Route>

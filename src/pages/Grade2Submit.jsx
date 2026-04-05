@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { Link, useOutletContext } from 'react-router-dom';
 import { TextAreaField } from '../components/TextAreaField.jsx';
 import { getClientSubmissionMeta } from '../clientDeviceMeta.js';
 import { createTextGuards } from '../formGuards.js';
@@ -254,8 +254,13 @@ export default function Grade2Submit() {
           />
         </div>
 
-        <div className="mt-8 rounded-xl border border-orange-200 bg-orange-50 px-5 py-4 text-center text-gray-800">
+        <div className="mt-8 rounded-xl border border-orange-200 bg-orange-50 px-5 py-4 text-center text-gray-800 space-y-2">
           <p className="text-base font-semibold">파일은 리로스쿨에 제출하세요.</p>
+          <p className="text-sm text-gray-600">
+            <Link to="/datasets" className="font-semibold text-teal-700 underline-offset-2 hover:underline">
+              2학년용 데이터셋 안내·다운로드
+            </Link>
+          </p>
         </div>
 
         <button

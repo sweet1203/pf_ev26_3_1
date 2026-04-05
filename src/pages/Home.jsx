@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Database } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -28,6 +29,13 @@ export default function Home() {
         >
           2학년 제출
           <span className="block text-sm font-normal text-teal-100 mt-1 opacity-95">정보</span>
+        </Link>
+        <Link
+          to="/datasets"
+          className="flex w-full items-center justify-center gap-2 py-3.5 px-6 text-center text-sm font-semibold rounded-xl border-2 border-slate-300 bg-slate-50 text-slate-800 hover:bg-slate-100 hover:border-slate-400 transition-colors"
+        >
+          <Database size={18} className="text-slate-600" aria-hidden />
+          데이터셋 안내 · 다운로드
         </Link>
       </div>
     </div>

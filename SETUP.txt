@@ -26,3 +26,4 @@
 [참고]
 - 소스: src/App.jsx
 - 루트 수행평가제출.html은 안내용이며, 실제 앱은 npm run dev / build 결과입니다.
+- 데이터셋 안내·다운로드 페이지 경로: /datasets (npm run dev / build 시 dataset/grade2·grade3가 public/dataset/으로 복사됩니다)
