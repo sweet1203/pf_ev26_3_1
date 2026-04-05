@@ -5,6 +5,8 @@ import Home from './pages/Home.jsx';
 import Grade3Submit from './pages/Grade3Submit.jsx';
 import Grade2Submit from './pages/Grade2Submit.jsx';
 import DatasetGuide from './pages/DatasetGuide.jsx';
+import PracticeGrade2 from './pages/PracticeGrade2.jsx';
+import PracticeGrade3 from './pages/PracticeGrade3.jsx';
 
 function Layout() {
   const [toast, setToast] = useState(null);
@@ -56,6 +58,9 @@ export default function App() {
         <Route path="/datasets" element={<DatasetGuide />} />
         <Route path="/grade3" element={<Grade3Submit />} />
         <Route path="/grade2" element={<Grade2Submit />} />
+        {/* 연습용: 홈·데이터셋 안내 등에서 링크하지 않음. URL로만 접속 */}
+        <Route path="/practice/2-information" element={<PracticeGrade2 />} />
+        <Route path="/practice/3-bigdata" element={<PracticeGrade3 />} />
       </Route>
     </Routes>
   );
