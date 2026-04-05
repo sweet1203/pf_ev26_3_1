@@ -1,6 +1,6 @@
 /**
  * 데이터셋 안내 페이지용 메타데이터.
- * 파일명은 01~19번 연속. 행·열 수는 prepare_datasets_by_grade.py 출력 기준.
+ * 파일명은 01~20번 연속. 행·열 수는 prepare_datasets_by_grade.py 출력 기준.
  */
 export const DATASET_CATALOG = [
   {
@@ -173,6 +173,15 @@ export const DATASET_CATALOG = [
       '19번 데이터입니다. 연비, 배기량, 마력, 중량, 제조 지역 등 변수 간 관계와 연비 차이를 분석하기 좋습니다.',
     g2: { rows: 392, cols: 9 },
     g3: { rows: 392, cols: 9 },
+  },
+  {
+    num: 20,
+    file: '20_미국주교통사고.csv',
+    title: '미국 주별 교통사고 (Seaborn car_crashes)',
+    blurb:
+      '20번 데이터입니다. Seaborn 내장 예제로, 미국 주(약어)마다 10억 주행마일당 총 사고율·과속·음주 관련 비율·자동차 보험료 등이 있습니다. 막대·산점도·상관을 연습하기 좋습니다.',
+    g2: { rows: 51, cols: 5 },
+    g3: { rows: 51, cols: 8 },
   },
 ];
 

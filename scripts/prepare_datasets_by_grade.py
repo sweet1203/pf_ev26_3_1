@@ -955,6 +955,56 @@ def process_mpg(rows: list[list[str]], header: list[str], max_rows: int | None):
     return h, body, note
 
 
+def process_car_crashes(rows: list[list[str]], header: list[str], max_rows: int | None, g2: bool):
+    """Seaborn 예제 car_crashes (mwaskom/seaborn-data). 미국 주별 사고·비율·보험 관련 지표."""
+    if g2:
+        cols = ["abbrev", "total", "speeding", "alcohol", "ins_premium"]
+        mp_en_to_ko = {
+            "abbrev": "주코드",
+            "total": "총사고율",
+            "speeding": "과속비율",
+            "alcohol": "음주비율",
+            "ins_premium": "자동차보험료_USD",
+        }
+    else:
+        cols = [
+            "abbrev",
+            "total",
+            "speeding",
+            "alcohol",
+            "not_distracted",
+            "no_previous",
+            "ins_premium",
+            "ins_losses",
+        ]
+        mp_en_to_ko = {
+            "abbrev": "주코드",
+            "total": "총사고율",
+            "speeding": "과속비율",
+            "alcohol": "음주비율",
+            "not_distracted": "비방해운전비율",
+            "no_previous": "무전과비율",
+            "ins_premium": "자동차보험료_USD",
+            "ins_losses": "보험손실_USD",
+        }
+    h, body = pick_cols(header, rows, cols)
+    h = rename_header(h, mp_en_to_ko)
+    body = strip_rows(h, body)
+    body = drop_rows_missing_in(h, body, ["주코드", "총사고율"])
+    nb: list[list[str]] = []
+    for r in body:
+        if len(r) < len(h):
+            r = r + [""] * (len(h) - len(r))
+        try:
+            nums = [str(round(float(r[i]), 4)) for i in range(1, len(r))]
+            nb.append([r[0]] + nums)
+        except (ValueError, IndexError):
+            continue
+    body = sample_rows(nb, max_rows)
+    note = "Seaborn car_crashes. 주별 10억주행마일당 사고율·항목별 비율·보험료 등(교육용). 2학년은 5열 요약."
+    return h, body, note
+
+
 def dispatch(name: str, rows, header, g2: bool) -> tuple[list[str], list[list[str]], str]:
     limits_g2 = {
         "04 Air Quality Data in India.csv": 1800,
@@ -1010,10 +1060,16 @@ def dispatch(name: str, rows, header, g2: bool) -> tuple[list[str], list[list[st
         return process_exercise(rows, header, lim or 200)
     if name == "21 mpg.csv":
         return process_mpg(rows, header, lim or 400)
+    if name == "22 car_crashes.csv":
+        return (
+            process_car_crashes(rows, header, lim or 60, g2=True)
+            if g2
+            else process_car_crashes(rows, header, lim or 60, g2=False)
+        )
     raise ValueError(f"알 수 없는 파일: {name}")
 
 
-# 원본(dataset/루트) 파일명 → 학년 폴더에 쓸 파일명 (01~19 연속 번호)
+# 원본(dataset/루트) 파일명 → 학년 폴더에 쓸 파일명 (01~20 연속 번호)
 SOURCE_TO_OUTPUT: list[tuple[str, str]] = [
     ("01 StudentsPerformance.csv", "01_학생시험점수.csv"),
     ("02 student-mat.csv", "02_포르투갈학생성적.csv"),
@@ -1034,6 +1090,7 @@ SOURCE_TO_OUTPUT: list[tuple[str, str]] = [
     ("19 diamonds.csv", "17_다이아몬드.csv"),
     ("20 exercise.csv", "18_운동맥박.csv"),
     ("21 mpg.csv", "19_자동차연비.csv"),
+    ("22 car_crashes.csv", "20_미국주교통사고.csv"),
 ]
 
 
@@ -1095,7 +1152,7 @@ def main() -> None:
 - UTF-8(BOM) CSV입니다. 엑셀에서 한글이 깨지면 '데이터 > 텍스트/CSV'로 가져오기 하세요.
 - 2학년 수행평가(정보): 출처·데이터 설명·항목(열)·그래프·해석 중심. 열 수를 줄여 보기 쉽게 했습니다.
 - 3학년 수행평가(빅데이터분석): 범주형·수치형 구분, 기초통계, 그룹 비교·관계·분포에 쓸 수 있게 열을 더 남겼습니다.
-- 결측치는 데이터마다 다릅니다. 파일명은 01~19번이 연속되도록 정리되어 있습니다.
+- 결측치는 데이터마다 다릅니다. 파일명은 01~20번이 연속되도록 정리되어 있습니다.
 - 원본은 dataset/ 루트 CSV입니다. 재생성: python scripts/prepare_datasets_by_grade.py
 """
     for od in (OUT_G2, OUT_G3):

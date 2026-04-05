@@ -63,8 +63,8 @@ export default function DatasetGuide() {
               </p>
               <h1 className="text-2xl sm:text-3xl font-bold leading-tight">데이터셋 안내 및 다운로드</h1>
               <p className="mt-3 text-sm sm:text-base opacity-95 max-w-2xl leading-relaxed">
-                아래 파일은 수업용으로 정리한 CSV입니다. <strong>데이터셋 번호는 1번부터 19번까지 연속</strong>이며,
-                파일명 앞의 숫자(01~19)와 같습니다. 엑셀·구글 시트·Orange 등에서 열어 분석에 사용할 수 있습니다.
+                아래 파일은 수업용으로 정리한 CSV입니다. <strong>데이터셋 번호는 1번부터 20번까지 연속</strong>이며,
+                파일명 앞의 숫자(01~20)와 같습니다. 엑셀·구글 시트·Orange 등에서 열어 분석에 사용할 수 있습니다.
                 UTF-8(BOM)이므로 엑셀에서 한글이 깨지면 &apos;데이터 → 텍스트/CSV&apos;로 가져오기를 이용하세요.
               </p>
             </div>
@@ -123,7 +123,7 @@ export default function DatasetGuide() {
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <FileSpreadsheet size={18} className="text-gray-500" />
             <span>
-              총 <strong className="text-gray-900">{items.length}</strong>개 (1~19번)
+              총 <strong className="text-gray-900">{items.length}</strong>개 (1~20번)
             </span>
           </div>
           <Link
