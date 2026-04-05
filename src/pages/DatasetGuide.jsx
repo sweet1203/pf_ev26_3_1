@@ -8,15 +8,20 @@ export default function DatasetGuide() {
   const [query, setQuery] = useState('');
 
   const items = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return DATASET_CATALOG.filter((d) => {
-      if (!q) return true;
-      return (
+    const raw = query.trim();
+    const q = raw.toLowerCase();
+    if (!q) return DATASET_CATALOG;
+    const asNum = parseInt(raw, 10);
+    if (!Number.isNaN(asNum) && String(asNum) === raw) {
+      return DATASET_CATALOG.filter((d) => d.num === asNum);
+    }
+    return DATASET_CATALOG.filter(
+      (d) =>
         d.title.toLowerCase().includes(q) ||
         d.blurb.toLowerCase().includes(q) ||
-        d.file.toLowerCase().includes(q)
-      );
-    });
+        d.file.toLowerCase().includes(q) ||
+        `${d.num}번`.includes(raw),
+    );
   }, [query]);
 
   const statsKey = grade === 2 ? 'g2' : 'g3';
@@ -58,9 +63,9 @@ export default function DatasetGuide() {
               </p>
               <h1 className="text-2xl sm:text-3xl font-bold leading-tight">데이터셋 안내 및 다운로드</h1>
               <p className="mt-3 text-sm sm:text-base opacity-95 max-w-2xl leading-relaxed">
-                아래 파일은 수업용으로 정리한 CSV입니다. 엑셀·구글 시트·Orange 등에서 열어 분석에 사용할 수
-                있습니다. UTF-8(BOM)이므로 엑셀에서 한글이 깨지면 &apos;데이터 → 텍스트/CSV&apos;로 가져오기를
-                이용하세요.
+                아래 파일은 수업용으로 정리한 CSV입니다. <strong>데이터셋 번호는 1번부터 19번까지 연속</strong>이며,
+                파일명 앞의 숫자(01~19)와 같습니다. 엑셀·구글 시트·Orange 등에서 열어 분석에 사용할 수 있습니다.
+                UTF-8(BOM)이므로 엑셀에서 한글이 깨지면 &apos;데이터 → 텍스트/CSV&apos;로 가져오기를 이용하세요.
               </p>
             </div>
             <BookOpen className="hidden sm:block opacity-30 flex-shrink-0" size={56} strokeWidth={1.25} />
@@ -118,25 +123,15 @@ export default function DatasetGuide() {
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <FileSpreadsheet size={18} className="text-gray-500" />
             <span>
-              총 <strong className="text-gray-900">{items.length}</strong>개 데이터셋
+              총 <strong className="text-gray-900">{items.length}</strong>개 (1~19번)
             </span>
           </div>
-          <div className="flex flex-wrap gap-2">
-            <a
-              href={datasetFileUrl(grade, '_데이터셋_요약.csv')}
-              download
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-800 text-sm font-medium hover:bg-gray-50 transition-colors"
-            >
-              <Download size={16} />
-              전체 요약 CSV
-            </a>
-            <Link
-              to={submitPath}
-              className={`inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold shadow-md transition-colors border ${accentBtn}`}
-            >
-              {grade}학년 제출 페이지
-            </Link>
-          </div>
+          <Link
+            to={submitPath}
+            className={`inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold shadow-md transition-colors border sm:ml-auto ${accentBtn}`}
+          >
+            {grade}학년 제출 페이지
+          </Link>
         </div>
       </div>
 
@@ -152,7 +147,10 @@ export default function DatasetGuide() {
               <div className="p-5 sm:p-6">
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                   <div className="min-w-0 flex-1">
-                    <h2 className="text-lg font-bold text-gray-900 leading-snug">{d.title}</h2>
+                    <h2 className="text-lg font-bold text-gray-900 leading-snug">
+                      <span className="text-gray-500 font-semibold tabular-nums mr-2">{d.num}.</span>
+                      {d.title}
+                    </h2>
                     <p className="mt-2 text-sm text-gray-600 leading-relaxed">{d.blurb}</p>
                     <p className="mt-3 text-xs text-gray-500 font-mono break-all">{d.file}</p>
                     <p className="mt-2 text-xs text-gray-500">

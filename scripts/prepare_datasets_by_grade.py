@@ -27,10 +27,6 @@ random.seed(42)
 OUT_ENCODING = "utf-8-sig"
 
 
-def list_source_csvs() -> list[Path]:
-    return sorted(SRC_DIR.glob("*.csv"))
-
-
 def read_table(path: Path) -> tuple[list[str], list[list[str]]]:
     with open(path, "r", newline="", encoding="utf-8", errors="replace") as f:
         rows = list(csv.reader(f))
@@ -1017,22 +1013,51 @@ def dispatch(name: str, rows, header, g2: bool) -> tuple[list[str], list[list[st
     raise ValueError(f"알 수 없는 파일: {name}")
 
 
-def stem_from_source(filename: str) -> str:
-    base = Path(filename).stem
-    num = base.split()[0] if base[:2].isdigit() else base[:2]
-    rest = base[len(num) :].strip() if base[:2].isdigit() else base
-    safe = re.sub(r'[\\/:*?"<>|]+', "_", rest)
-    return f"{num}_{safe}".strip("_")
+# 원본(dataset/루트) 파일명 → 학년 폴더에 쓸 파일명 (01~19 연속 번호)
+SOURCE_TO_OUTPUT: list[tuple[str, str]] = [
+    ("01 StudentsPerformance.csv", "01_학생시험점수.csv"),
+    ("02 student-mat.csv", "02_포르투갈학생성적.csv"),
+    ("03 Sleep_health_and_lifestyle_dataset.csv", "03_수면건강.csv"),
+    ("04 Air Quality Data in India.csv", "04_인도대기질.csv"),
+    ("06 World Happiness Report 2019.csv", "05_세계행복.csv"),
+    ("07 Superstore.csv", "06_슈퍼스토어.csv"),
+    ("08 netflix_titles.csv", "07_넷플릭스.csv"),
+    ("09 USvideos.csv", "08_유튜브트렌드.csv"),
+    ("10 500_Person_Gender_Height_Weight_Index.csv", "09_키몸무게체형.csv"),
+    ("11 heart.csv", "10_심장질환.csv"),
+    ("12 Uber-Jan-Feb-FOIL.csv", "11_우버운행.csv"),
+    ("14 titanic.csv", "12_타이타닉.csv"),
+    ("15 Iris.csv", "13_붓꽃.csv"),
+    ("16 penguins.csv", "14_펭귄.csv"),
+    ("17 tips.csv", "15_식당팁.csv"),
+    ("18 flights.csv", "16_항공승객.csv"),
+    ("19 diamonds.csv", "17_다이아몬드.csv"),
+    ("20 exercise.csv", "18_운동맥박.csv"),
+    ("21 mpg.csv", "19_자동차연비.csv"),
+]
+
+
+def clear_grade_output_csvs(out_dir: Path) -> None:
+    if not out_dir.is_dir():
+        return
+    for p in out_dir.glob("*.csv"):
+        p.unlink()
 
 
 def main() -> None:
+    clear_grade_output_csvs(OUT_G2)
+    clear_grade_output_csvs(OUT_G3)
+
     summaries: list[dict[str, str]] = []
-    for path in list_source_csvs():
+    for src_name, out_name in SOURCE_TO_OUTPUT:
+        path = SRC_DIR / src_name
+        if not path.is_file():
+            print(f"[건너뜀] 원본 없음: {src_name}")
+            continue
         name = path.name
         header, rows = read_table(path)
         if not header:
             continue
-        stem = stem_from_source(name)
 
         for g2, out_dir in ((True, OUT_G2), (False, OUT_G3)):
             label = "2학년" if g2 else "3학년"
@@ -1041,7 +1066,6 @@ def main() -> None:
             except Exception as e:
                 print(f"[오류] {name} ({label}): {e}")
                 continue
-            out_name = f"{stem}.csv"
             out_path = out_dir / out_name
             write_table(out_path, h, body)
             summaries.append(
@@ -1071,8 +1095,8 @@ def main() -> None:
 - UTF-8(BOM) CSV입니다. 엑셀에서 한글이 깨지면 '데이터 > 텍스트/CSV'로 가져오기 하세요.
 - 2학년 수행평가(정보): 출처·데이터 설명·항목(열)·그래프·해석 중심. 열 수를 줄여 보기 쉽게 했습니다.
 - 3학년 수행평가(빅데이터분석): 범주형·수치형 구분, 기초통계, 그룹 비교·관계·분포에 쓸 수 있게 열을 더 남겼습니다.
-- 결측치는 데이터마다 다릅니다. 자세한 내용은 각 폴더의 _데이터셋_요약.csv 의 '처리_요약' 열을 보세요.
-- 원본은 dataset/ 루트의 번호 붙은 CSV입니다. 재생성: python scripts/prepare_datasets_by_grade.py
+- 결측치는 데이터마다 다릅니다. 파일명은 01~19번이 연속되도록 정리되어 있습니다.
+- 원본은 dataset/ 루트 CSV입니다. 재생성: python scripts/prepare_datasets_by_grade.py
 """
     for od in (OUT_G2, OUT_G3):
         (od / "README_DATASETS.txt").write_text(notes, encoding="utf-8")
