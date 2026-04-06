@@ -56,6 +56,13 @@ export default function Home() {
             </Link>
           </div>
           <Link
+            to="/practice/2-information/prep"
+            className="flex w-full items-center justify-center gap-2 py-3 px-4 text-center text-sm font-semibold rounded-xl border border-teal-300 bg-teal-50 text-teal-950 hover:bg-teal-100 transition-colors"
+          >
+            <BarChart3 size={16} className="text-teal-800 shrink-0" aria-hidden />
+            2학년 연습 전 대비 가이드 (데이터·수집·시각화·해석)
+          </Link>
+          <Link
             to="/practice/3-bigdata/prep"
             className="flex w-full items-center justify-center gap-2 py-3 px-4 text-center text-sm font-semibold rounded-xl border border-amber-300 bg-amber-50 text-amber-950 hover:bg-amber-100 transition-colors"
           >

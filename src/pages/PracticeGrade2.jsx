@@ -25,6 +25,7 @@ export default function PracticeGrade2() {
   return (
     <PracticeGradePage
       grade={2}
+      prepGuideTo="/practice/2-information/prep"
       formUrl={PRACTICE_FORM_GRADE2}
       heroEyebrow="2학년 정보 · 연습"
       heroTitle="2학년 정보과 수행평가(연습용)"
