@@ -4,7 +4,7 @@ import { BookOpen, Download, ExternalLink, FileSpreadsheet, GraduationCap } from
 import { DATASET_CATALOG, datasetFileUrl } from '../datasetCatalog.js';
 
 /**
- * 연습용 전용: 본 사이트 다른 경로로 이동하는 링크 없음. 제출은 Google 폼으로만 연결.
+ * 연습용 전용 페이지. 제출은 Google 폼 버튼으로 연결. prepGuideTo가 있으면 동일 스타일로 대비 가이드 링크 표시.
  */
 export default function PracticeGradePage({
   grade,
@@ -30,32 +30,6 @@ export default function PracticeGradePage({
 
   return (
     <div className="max-w-4xl mx-auto pb-16">
-      {prepGuideTo ? (
-        <div
-          className={`mb-4 rounded-xl border px-4 py-3 text-sm leading-relaxed ${
-            grade === 2
-              ? 'border-teal-200 bg-teal-50 text-teal-950'
-              : 'border-orange-200 bg-orange-50 text-orange-950'
-          }`}
-        >
-          <strong className="font-semibold">연습에 앞서</strong> 데이터 선정·Orange3·AI 활용·유의사항을 한 번에 보려면{' '}
-          <Link to={prepGuideTo} className="font-bold underline hover:opacity-90">
-            연습 전 대비 가이드
-          </Link>
-          를 먼저 확인하세요.
-        </div>
-      ) : null}
-
-      <div
-        className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950 leading-relaxed"
-        role="status"
-      >
-        <strong className="font-semibold">연습 전용 페이지입니다.</strong> 이 주소로만 들어온 페이지이며, 메인 제출
-        사이트와는 따로 둔 연습용입니다. 아래에서 CSV를 받아 분석·작성 연습을 한 뒤, 제출은{' '}
-        <strong>이 페이지의 「연습 제출 (Google 폼)」</strong> 버튼으로만 하면 됩니다. 본 수행평가 공식 제출(글·파일)은
-        담임·과목 선생님 안내를 따르세요.
-      </div>
-
       <div className={`rounded-2xl shadow-xl overflow-hidden border mb-8 bg-white ${borderCard}`}>
         <div className={`px-6 py-8 text-white ${heroBg}`}>
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
@@ -93,15 +67,26 @@ export default function PracticeGradePage({
               총 <strong className="text-gray-900">{DATASET_CATALOG.length}</strong>개 (1~20번)
             </span>
           </div>
-          <a
-            href={formUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold shadow-md transition-colors border sm:ml-auto ${accentBtn}`}
-          >
-            <ExternalLink size={18} aria-hidden />
-            연습 제출 (Google 폼)
-          </a>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto sm:ml-auto">
+            {prepGuideTo ? (
+              <Link
+                to={prepGuideTo}
+                className={`inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold shadow-md transition-colors border sm:shrink-0 ${accentBtn}`}
+              >
+                <BookOpen size={18} aria-hidden />
+                연습 전 대비 가이드
+              </Link>
+            ) : null}
+            <a
+              href={formUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold shadow-md transition-colors border sm:shrink-0 ${accentBtn}`}
+            >
+              <ExternalLink size={18} aria-hidden />
+              연습 제출 (Google 폼)
+            </a>
+          </div>
         </div>
       </div>
 
