@@ -5,18 +5,17 @@ import { PRACTICE_FORM_GRADE3 } from '../practiceFormUrls.js';
 const HOW_TO_STEPS = [
   <>
     <strong>3학년용</strong> CSV만 사용하세요. 목록에서 연습할 <strong>데이터 번호(1~20번)</strong>를 정하고{' '}
-    <strong>다운로드</strong>로 저장합니다. 2학년용 파일과 열 구성이 다를 수 있으니 학년을 헷갈리지 마세요.
+    <strong>다운로드</strong>로 저장합니다. 다운받은 파일을 바탕화면/빅데이터 폴더로 이동합니다.
   </>,
   <>
     Orange 3 등으로 데이터를 열고, <strong>범주형·수치형 변수</strong>를 구분하고, 분석 목적에 맞는 위젯으로 표·그래프·
-    기초 통계를 확인합니다. 실제 제출 시 필요한 <strong>차트 이미지·.ows 파일</strong>은 선생님 안내에 따릅니다.
+    기초 통계를 확인합니다. 실제 제출 시 필요한 <strong> 파일</strong>은 선생님 안내에 따릅니다.
   </>,
   <>
     <strong>연습 제출 (Google 폼)</strong>에서 연습 폼을 연 뒤, 데이터 이름·내용 설명·범주형/수치형 예시·분석 목적·
-    분석 방법 선택·기초 통계·그래프 종류·해석·결론·한계 등 <strong>실제 빅데이터분석 수행평가와 비슷한 항목</strong>을
-    채워 봅니다.
+    분석 방법 선택·기초 통계·그래프 종류·해석·결론·한계 등 <strong>답변</strong>을 채워 봅니다.
   </>,
-  <>한 번에 다 적기 어렵다면 메모장에 초안을 쓴 뒤 복사해 넣어도 됩니다.</>,
+  <>실제 수행평가 사이트는 복사·붙여넣기가 되지 않습니다.</>,
 ];
 
 export default function PracticeGrade3() {
