@@ -9,6 +9,7 @@ import PracticeGrade2 from './pages/PracticeGrade2.jsx';
 import PracticeGrade3 from './pages/PracticeGrade3.jsx';
 import ManualGrade2 from './pages/ManualGrade2.jsx';
 import ManualGrade3 from './pages/ManualGrade3.jsx';
+import PrepGuideGrade3BigData from './pages/PrepGuideGrade3BigData.jsx';
 
 function Layout() {
   const [toast, setToast] = useState(null);
@@ -64,6 +65,7 @@ export default function App() {
         <Route path="/grade2" element={<Grade2Submit />} />
         {/* 연습용: 홈·데이터셋 안내 등에서 링크하지 않음. URL로만 접속 */}
         <Route path="/practice/2-information" element={<PracticeGrade2 />} />
+        <Route path="/practice/3-bigdata/prep" element={<PrepGuideGrade3BigData />} />
         <Route path="/practice/3-bigdata" element={<PracticeGrade3 />} />
       </Route>
     </Routes>

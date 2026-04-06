@@ -22,6 +22,7 @@ export default function PracticeGrade3() {
   return (
     <PracticeGradePage
       grade={3}
+      prepGuideTo="/practice/3-bigdata/prep"
       formUrl={PRACTICE_FORM_GRADE3}
       heroEyebrow="3학년 빅데이터분석 · 연습"
       heroTitle="3학년 빅데이터분석 수행평가(연습용)"

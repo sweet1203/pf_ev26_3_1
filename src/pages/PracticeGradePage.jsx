@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { BookOpen, Download, ExternalLink, FileSpreadsheet, GraduationCap } from 'lucide-react';
 import { DATASET_CATALOG, datasetFileUrl } from '../datasetCatalog.js';
 
@@ -14,6 +15,7 @@ export default function PracticeGradePage({
   howToTitle,
   howToSteps,
   howToNote,
+  prepGuideTo,
 }) {
   const statsKey = grade === 2 ? 'g2' : 'g3';
   const accentBtn =
@@ -28,6 +30,22 @@ export default function PracticeGradePage({
 
   return (
     <div className="max-w-4xl mx-auto pb-16">
+      {prepGuideTo ? (
+        <div
+          className={`mb-4 rounded-xl border px-4 py-3 text-sm leading-relaxed ${
+            grade === 2
+              ? 'border-teal-200 bg-teal-50 text-teal-950'
+              : 'border-orange-200 bg-orange-50 text-orange-950'
+          }`}
+        >
+          <strong className="font-semibold">연습에 앞서</strong> 데이터 선정·Orange3·AI 활용·유의사항을 한 번에 보려면{' '}
+          <Link to={prepGuideTo} className="font-bold underline hover:opacity-90">
+            연습 전 대비 가이드
+          </Link>
+          를 먼저 확인하세요.
+        </div>
+      ) : null}
+
       <div
         className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950 leading-relaxed"
         role="status"

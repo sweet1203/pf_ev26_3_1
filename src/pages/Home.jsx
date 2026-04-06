@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, Database } from 'lucide-react';
+import { BarChart3, BookOpen, Database } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -55,6 +55,13 @@ export default function Home() {
               3학년 안내 매뉴얼
             </Link>
           </div>
+          <Link
+            to="/practice/3-bigdata/prep"
+            className="flex w-full items-center justify-center gap-2 py-3 px-4 text-center text-sm font-semibold rounded-xl border border-amber-300 bg-amber-50 text-amber-950 hover:bg-amber-100 transition-colors"
+          >
+            <BarChart3 size={16} className="text-amber-800 shrink-0" aria-hidden />
+            3학년 연습 전 대비 가이드 (데이터·Orange3·AI)
+          </Link>
         </div>
       </div>
     </div>
