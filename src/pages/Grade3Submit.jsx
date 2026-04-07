@@ -409,7 +409,7 @@ export default function Grade3Submit() {
         </div>
 
         <div className="mt-8 rounded-xl border border-orange-200 bg-orange-50 px-5 py-4 text-center text-gray-800 space-y-2">
-          <p className="text-base font-semibold">파일 제출은 선생님 안내를 따르세요.</p>
+          <p className="text-base font-semibold">파일 제출은 선생님의 안내를 따르세요.</p>
           <p className="text-sm text-gray-600">
             <Link to="/datasets" className="font-semibold text-orange-700 underline-offset-2 hover:underline">
               3학년용 데이터셋 안내·다운로드

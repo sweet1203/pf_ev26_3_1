@@ -8,6 +8,7 @@ import {
   PREP_GUIDE_GRADE2_CATEGORY_COLORS,
 } from '../data/prepGuideGrade2Datasets.js';
 import { PRACTICE_FORM_GRADE2 } from '../practiceFormUrls.js';
+import RiroschoolSubmitNotice from '../components/RiroschoolSubmitNotice.jsx';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -351,9 +352,18 @@ export default function PrepGuideGrade2Information() {
                 </strong>{' '}
                 처럼 데이터의 특성과 그래프의 목적을 연결하세요.
               </p>
+              <p className="text-sm text-slate-700 mt-4 pt-4 border-t border-slate-200">
+                <strong>실제 제출:</strong> Orange에서 그래프 창의 <strong>차트 제목</strong>을 이 주제에 맞게 적어 둔 뒤{' '}
+                <strong>차트 이미지보내기</strong>로 저장합니다. 리로스쿨에는 이 PNG와 <strong>학번이름_수행1.ows</strong> 등
+                규칙은 아래 박스를 참고하세요.
+              </p>
             </div>
           </div>
         </section>
+
+        <div className="max-w-4xl mx-auto">
+          <RiroschoolSubmitNotice className="border-blue-300 bg-blue-50/90" />
+        </div>
 
         <section id="section-step3" className="scroll-mt-28">
           <div className="mb-8">

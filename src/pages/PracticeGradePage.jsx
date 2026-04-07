@@ -1,4 +1,5 @@
 import React from 'react';
+import RiroschoolSubmitNotice from '../components/RiroschoolSubmitNotice.jsx';
 import { BookOpen, Download, ExternalLink, FileSpreadsheet, GraduationCap } from 'lucide-react';
 import { DATASET_CATALOG, datasetFileUrl } from '../datasetCatalog.js';
 
@@ -90,6 +91,16 @@ export default function PracticeGradePage({
           </div>
         </div>
       </div>
+
+      {(grade === 2 || grade === 3) && (
+        <div className="mb-8">
+          <RiroschoolSubmitNotice
+            className={
+              grade === 2 ? 'border-teal-300 bg-teal-50/90' : 'border-orange-300 bg-orange-50/90'
+            }
+          />
+        </div>
+      )}
 
       <section
         className={`mb-8 rounded-2xl border bg-white p-5 sm:p-6 shadow-sm ${

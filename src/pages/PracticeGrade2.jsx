@@ -8,9 +8,10 @@ const HOW_TO_STEPS = [
     저장합니다. 다운로드 폴더에서 바탕화면/정보 폴더로 이동하세요.
   </>,
   <>
-    Orange 3 등 수업에서 쓰는 도구로 CSV를 열고, <strong>본인에게 맞는 위젯</strong>으로 표를 확인·그래프를 만듭니다.
-    차트 이미지 저장, .ows 저장은 <strong>실제 수행평가 때 선생님 안내</strong>에 맞추면 됩니다. 이 연습 페이지에서는
-    폼 작성 연습이 중심입니다.
+    Orange 3로 CSV를 열고 <strong>본인에게 맞는 위젯</strong>으로 표·그래프를 만듭니다. 실제 수행평가에서는{' '}
+    <strong>리로스쿨</strong>에 <strong>학번이름_수행1.ows</strong>와 <strong>차트 이미지보내기</strong>로 저장한{' '}
+    <strong>학번이름_차트제목.png</strong>(차트 제목·파일명은 분석 주제에 맞게) <strong>총 2개</strong>를 제출합니다. 아래
+    박스와 <strong>2학년 안내 매뉴얼</strong>을 함께 확인하세요. 이 페이지에서는 Google 폼 연습이 중심입니다.
   </>,
   <>
     상단 카드의 <strong>연습 제출 (Google 폼)</strong>을 눌러 연습 폼이 열리면, 안내에 따라 학번·이름·반과 함께{' '}
@@ -42,7 +43,8 @@ export default function PracticeGrade2() {
       howToNote={
         <>
           연습 폼은 <strong>Google 계정으로 로그인</strong>하라는 안내가 나올 수 있습니다. 학교·가정 정책에 맞게
-          진행하세요. 이 연습 제출은 <strong>공식 성적 제출이 아닙니다.</strong>
+          진행하세요. 이 연습 제출은 <strong>공식 성적 제출이 아니며</strong>, 글·파일 최종 제출은{' '}
+          위 <strong>리로스쿨 제출</strong> 안내와 <strong>선생님의 안내</strong>를 따르세요.
         </>
       }
     />

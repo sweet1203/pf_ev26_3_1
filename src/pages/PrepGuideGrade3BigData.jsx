@@ -7,6 +7,7 @@ import {
   PREP_GUIDE_CATEGORIES,
   PREP_GUIDE_CATEGORY_COLORS,
 } from '../data/prepGuideGrade3Datasets.js';
+import RiroschoolSubmitNotice from '../components/RiroschoolSubmitNotice.jsx';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -318,6 +319,10 @@ export default function PrepGuideGrade3BigData() {
               </div>
             ))}
           </div>
+          <p className="text-sm text-stone-600 mt-6 max-w-4xl">
+            제출용 그래프를 남길 때는 시각화 위젯에서 <strong>차트 제목</strong>을 분석 주제에 맞게 적은 뒤{' '}
+            <strong>차트 이미지보내기</strong>로 저장하세요.
+          </p>
         </section>
 
         <section id="section-ai" className="scroll-mt-28">
@@ -421,6 +426,11 @@ export default function PrepGuideGrade3BigData() {
               </p>
             </div>
           </div>
+
+          <div className="max-w-4xl mx-auto mb-12">
+            <RiroschoolSubmitNotice className="border-amber-300 bg-amber-50/95 border-2" />
+          </div>
+
           <div className="bg-stone-800 rounded-2xl p-8 text-center text-white shadow-lg">
             <div className="text-4xl mb-4">🌟</div>
             <h3 className="text-2xl font-bold mb-4">성공적인 수행평가를 위한 팁</h3>

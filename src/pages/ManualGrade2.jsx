@@ -1,4 +1,5 @@
 import React from 'react';
+import RiroschoolSubmitNotice from '../components/RiroschoolSubmitNotice.jsx';
 import { ManualChrome, ManualH2, ManualStep, ManualTip, ManualUl } from './ManualChrome.jsx';
 
 export default function ManualGrade2() {
@@ -6,7 +7,7 @@ export default function ManualGrade2() {
     <ManualChrome
       grade={2}
       title="Orange 3로 수행평가 하기 (2학년 정보)"
-      subtitle="데이터를 불러와 본인에게 맞는 위젯으로 분석·시각화하고, 차트 이미지와 Orange 파일을 저장합니다. 과제 파일 제출은 선생님 안내를 따르세요. 아래 순서를 천천히 따라 하면 됩니다."
+      subtitle="데이터를 불러와 본인에게 맞는 위젯으로 분석·시각화하고, 차트 이미지와 Orange 파일을 저장합니다. 과제 파일 제출은 선생님의 안내를 따르세요. 아래 순서를 천천히 따라 하면 됩니다."
     >
       <section className="rounded-xl border border-gray-200 bg-slate-50 p-5 text-sm leading-relaxed">
         <ManualH2>한눈에 보는 순서</ManualH2>
@@ -17,7 +18,7 @@ export default function ManualGrade2() {
           <li>실행해서 그래프 확인하기</li>
           <li>차트 이미지보내기로 저장(PNG 등)</li>
           <li>Orange 작업 전체 저장(.ows 파일)</li>
-          <li>과제 파일 제출(선생님 안내)</li>
+          <li>리로스쿨에 .ows·차트 이미지 2개 제출(파일명 규칙 확인)</li>
           <li>제출 페이지에서 글 작성·제출</li>
         </ol>
       </section>
@@ -27,9 +28,13 @@ export default function ManualGrade2() {
         items={[
           '컴퓨터에 설치된 Orange 3 (최신 버전 권장, 무료)',
           '선생님이 안내한 번호의 CSV 파일(데이터셋 안내 페이지에서 본인 학년용 다운로드)',
-          '과제 제출 방법은 담임·과목 선생님 안내',
+          '과제 제출 방법은 선생님의 안내를 따르세요.',
         ]}
       />
+
+      <div className="mb-6">
+        <RiroschoolSubmitNotice className="border-teal-300 bg-teal-50/90" />
+      </div>
 
       <ManualStep n={1} title="CSV 데이터 받기">
         <p>
@@ -89,13 +94,14 @@ export default function ManualGrade2() {
         </p>
         <ManualUl
           items={[
-            '그래프 창 상단 또는 하단의 「이미지 저장」「Save image」「카메라」 모양 아이콘',
+            '그래프 창 상단 또는 하단의 「차트 이미지보내기」「이미지 저장」「Save image」「카메라」 모양 아이콘',
             '그래프 영역을 우클릭했을 때 나오는 저장 메뉴',
           ]}
         />
         <p>
-          저장 형식은 <strong>PNG 또는 JPG</strong>처럼 흔한 이미지로 저장합니다. 파일 이름은{' '}
-          <strong>학번_성함_차트</strong>처럼 구분되게 짓는 것을 권장합니다.
+          그래프 창에서 <strong>차트 제목</strong>을 본인의 <strong>분석 주제</strong>에 맞게 먼저 적어 둔 뒤 저장합니다.
+          저장 형식은 <strong>PNG 또는 JPG</strong>입니다. 파일 이름 규칙(학번이름_차트제목 등)은 위{' '}
+          <strong>리로스쿨 제출 파일</strong> 안내와 같이 맞춥니다.
         </p>
         <ManualTip>이미지가 잘리면 창 크기를 키운 뒤 다시 저장해 보세요.</ManualTip>
       </ManualStep>
@@ -103,7 +109,8 @@ export default function ManualGrade2() {
       <ManualStep n={6} title="Orange 파일(.ows) 저장하기">
         <p>
           선생님이 요구하는 <strong>작업 전체(위젯 배치·연결 상태)</strong>를 파일로 남깁니다. Orange 메뉴에서{' '}
-          <strong>File → Save As…</strong> 를 선택하고, 확장자가 <strong>.ows</strong> 인지 확인한 뒤 저장합니다.
+          <strong>File → Save As…</strong> 를 선택하고, 확장자가 <strong>.ows</strong> 인지 확인한 뒤 저장합니다. 파일
+          이름은 위 안내와 같이 <strong>학번이름_수행1.ows</strong> 형태로 맞춥니다.
         </p>
         <ManualUl
           items={[
@@ -113,10 +120,10 @@ export default function ManualGrade2() {
         />
       </ManualStep>
 
-      <ManualStep n={7} title="과제 파일 제출">
+      <ManualStep n={7} title="과제 파일 제출(리로스쿨)">
         <p>
-          <strong>차트 이미지 파일</strong>과 <strong>.ows 파일</strong>을 어디에·어떻게 올릴지는{' '}
-          <strong>선생님 안내</strong>를 따르세요.
+          <strong>리로스쿨</strong>에는 <strong>차트 이미지 1개</strong>와 <strong>.ows 1개</strong>, 총 2개를 업로드합니다.
+          파일 이름·형식은 상단 <strong>리로스쿨 제출 파일</strong> 안내와 선생님의 안내를 따르세요.
         </p>
       </ManualStep>
 
@@ -132,8 +139,9 @@ export default function ManualGrade2() {
         <ManualUl
           items={[
             'CSV를 열지 않고 빈 위젯만 연결한 채 저장하는 경우',
-            '차트 캡처만 하고 .ows를 저장하지 않거나, 그 반대인 경우',
-            '다른 학생 파일 이름 그대로 제출하는 경우 → 반드시 본인 이름·학번이 드러나게',
+            '차트만 올리거나 .ows만 올려 리로스쿨에 총 2개가 되지 않는 경우',
+            '차트 제목·파일 이름이 분석 주제와 맞지 않게 저장하는 경우',
+            '다른 학생 파일 이름 그대로 제출하는 경우 → 반드시 본인 학번·이름이 드러나게',
           ]}
         />
       </section>
