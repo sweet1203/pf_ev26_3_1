@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { BookOpen, Download, ExternalLink, FileSpreadsheet, GraduationCap } from 'lucide-react';
 import { DATASET_CATALOG, datasetFileUrl } from '../datasetCatalog.js';
 
@@ -69,13 +68,15 @@ export default function PracticeGradePage({
           </div>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto sm:ml-auto">
             {prepGuideTo ? (
-              <Link
-                to={prepGuideTo}
+              <a
+                href={prepGuideTo}
+                target="_blank"
+                rel="noopener noreferrer"
                 className={`inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold shadow-md transition-colors border sm:shrink-0 ${accentBtn}`}
               >
                 <BookOpen size={18} aria-hidden />
                 연습 전 대비 가이드
-              </Link>
+              </a>
             ) : null}
             <a
               href={formUrl}
