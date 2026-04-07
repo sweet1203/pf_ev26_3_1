@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import RiroschoolSubmitNotice from '../components/RiroschoolSubmitNotice.jsx';
 import { ManualChrome, ManualH2, ManualStep, ManualTip, ManualUl } from './ManualChrome.jsx';
 
@@ -66,7 +67,7 @@ export default function ManualGrade2() {
           items={[
             'Data 범주의 Data Table: 표가 제대로 읽혔는지 행·열을 확인할 때 유용합니다. File 출력을 Data Table 입력에 연결합니다.',
             'Data 범주의 Column Statistics: 열(변수)별 평균·최솟값·최댓값 등 요약을 볼 때',
-            'Visualize 범주의 Bar Plot, Distributions: 막대·비율·분포',
+            'Visualize 범주의 Bar Plot, Distributions: 막대·분포(히스토그램 등). 원 그래프는 수업에서 다루지 않으므로 수행평가에서도 쓰지 않습니다.',
             'Visualize 범주의 Scatter Plot: 두 변수 관계',
             'Visualize 범주의 Box Plot: 값의 퍼짐·이상치',
           ]}
@@ -134,11 +135,43 @@ export default function ManualGrade2() {
         </p>
       </ManualStep>
 
+      <section className="rounded-xl border border-sky-200 bg-sky-50/90 p-5 text-sm text-slate-900 leading-relaxed mb-6">
+        <ManualH2>AI 활용 시 유의사항 (2학년)</ManualH2>
+        <p className="mt-3 mb-4">
+          생성형 AI는 <strong>보조 튜터</strong>로만 쓰는 것이 안전합니다. 막대·꺾은선·산점도의 차이, 그래프 선택 이유,
+          해석 문장을 <strong>다듬는 연습</strong> 정도는 도움을 받을 수 있지만, 문항 전체 답이나 해석을 AI에게 통째로
+          맡기면 안 됩니다.
+        </p>
+        <p className="font-semibold text-sky-900 mb-2">이렇게 활용하면 좋아요</p>
+        <ManualUl
+          items={[
+            '「막대 그래프와 꺾은선 그래프는 언제 쓰나요?」처럼 개념을 예시와 함께 물어보기',
+            '「내가 보려는 게 연도별 변화인데 어떤 그래프가 맞을까?」처럼 본인 데이터에 맞게 물어보기',
+            '「그래프가 이렇게 나왔는데 해석 문장을 초안만 잡아줄 수 있어? 나는 꼭 내 말로 다시 쓸게」',
+          ]}
+        />
+        <p className="font-semibold text-red-800 mt-5 mb-2">이런 사용은 피하세요</p>
+        <ManualUl
+          items={[
+            '「4번부터 9번까지 답 전부 써줘」처럼 수행평가 문항 통째로 요청하기',
+            'Orange 캡처만 넘기고 출처·열 설명·해석까지 전부 AI에게 쓰게 하기',
+            'AI 답을 그대로 베껴 제출하기 → 복사·붙여넣기 제한·표절 판정 위험',
+          ]}
+        />
+        <ManualTip>
+          <Link to="/practice/2-information/prep" className="font-semibold text-teal-800 underline hover:text-teal-950">
+            연습 전 대비 가이드
+          </Link>
+          에도 AI 활용 예시가 정리되어 있습니다. 평가 전에 함께 읽어 보세요.
+        </ManualTip>
+      </section>
+
       <section className="rounded-xl border border-red-100 bg-red-50/80 p-5 text-sm text-red-950 leading-relaxed">
         <ManualH2>자주 하는 실수</ManualH2>
         <ManualUl
           items={[
             'CSV를 열지 않고 빈 위젯만 연결한 채 저장하는 경우',
+            '수업에서 다루지 않은 원 그래프만 고르거나, 데이터에 맞지 않는 그래프를 고른 경우',
             '차트만 올리거나 .ows만 올려 리로스쿨에 총 2개가 되지 않는 경우',
             '차트 제목·파일 이름이 분석 주제와 맞지 않게 저장하는 경우',
             '다른 학생 파일 이름 그대로 제출하는 경우 → 반드시 본인 학번·이름이 드러나게',

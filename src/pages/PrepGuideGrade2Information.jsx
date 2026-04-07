@@ -17,6 +17,7 @@ const SECTION_IDS = [
   { id: 'section-datasets', label: '데이터 선정' },
   { id: 'section-step1', label: '수집 가이드' },
   { id: 'section-step2', label: '시각화 가이드' },
+  { id: 'section-ai', label: 'AI 활용' },
   { id: 'section-step3', label: '해석 가이드' },
 ];
 
@@ -291,7 +292,11 @@ export default function PrepGuideGrade2Information() {
             </p>
           </div>
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-            <div className="grid md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-slate-200">
+            <p className="text-sm text-slate-600 px-4 pt-4 md:px-6 border-b border-slate-100 pb-3">
+              2학년 수업에서는 <strong>막대·꺾은선·산점도</strong>를 다룹니다. 원 그래프는 배우지 않았으므로 수행평가에서도
+              선택하지 않습니다.
+            </p>
+            <div className="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-200">
               {[
                 {
                   icon: '📊',
@@ -312,16 +317,6 @@ export default function PrepGuideGrade2Information() {
                     </>
                   ),
                   ex: '예: 연도별 항공 승객 수 추이, 날짜별 우버 운행 건수',
-                },
-                {
-                  icon: '🍩',
-                  t: '원 그래프',
-                  p: (
-                    <>
-                      전체에서 각 항목이 차지하는 <strong>비율(비중)</strong>을 나타낼 때 효과적입니다.
-                    </>
-                  ),
-                  ex: '예: 전체 영화 중 장르별 비율, 타이타닉 객실 등급별 비율',
                 },
                 {
                   icon: '🎛️',
@@ -358,6 +353,84 @@ export default function PrepGuideGrade2Information() {
                 규칙은 아래 박스를 참고하세요.
               </p>
             </div>
+          </div>
+        </section>
+
+        <section id="section-ai" className="scroll-mt-28">
+          <div className="mb-8">
+            <div className="inline-block bg-sky-100 text-sky-900 font-bold px-3 py-1 rounded-full text-sm mb-3">TIP</div>
+            <h2 className="text-3xl font-bold text-slate-900 flex items-center mb-4">
+              <span className="text-4xl mr-3">🤖</span> AI 똑똑하게 활용하기 (2학년)
+            </h2>
+            <p className="text-slate-600 text-lg max-w-4xl">
+              수업에서 AI는 정답을 대신 써 주는 도구가 아니라, <strong>데이터 수집·그래프·해석</strong>을 이해하는 데 도움을 주는{' '}
+              <strong>보조 튜터</strong>로 쓰는 것이 좋습니다. 2학년 수행평가는 문항 4~9 중심이므로, 그 범위에 맞게
+              질문하세요.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-8">
+            <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+              <div className="bg-sky-50 px-6 py-4 border-b border-sky-100 flex items-center">
+                <span className="text-2xl mr-2">⭕</span>
+                <h3 className="font-bold text-sky-900 text-lg">추천하는 AI 질문법</h3>
+              </div>
+              <div className="p-6 space-y-4">
+                {[
+                  [
+                    '개념',
+                    '"막대 그래프와 꺾은선 그래프는 각각 언제 쓰는 게 좋아? 우리 수업 수준에서 예시를 들어 설명해줘."',
+                  ],
+                  [
+                    '선택',
+                    '"내 데이터는 연도별 매출 추이를 보고 싶은데, 막대랑 꺾은선 중 뭐가 더 맞을까? 이유도 짧게 알려줘."',
+                  ],
+                  [
+                    '해석',
+                    '"Orange에서 만든 꺾은선 그래프가 전체적으로 우상향이야. 문항 9 해석 문단에 어떤 식으로 쓰면 좋을까?"',
+                  ],
+                  [
+                    '표현',
+                    '"\'추이가 상승한다\'는 말 대신, 수행평가에 쓸 만한 문장을 나만의 말로 다듬는 연습을 도와줘."',
+                  ],
+                ].map(([tag, text]) => (
+                  <div key={tag} className="flex gap-4 items-start">
+                    <span className="bg-sky-100 text-sky-900 text-xs font-bold px-2 py-1 rounded shrink-0">{tag}</span>
+                    <p className="text-sm text-slate-700">{text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+              <div className="bg-red-50 px-6 py-4 border-b border-red-100 flex items-center">
+                <span className="text-2xl mr-2">❌</span>
+                <h3 className="font-bold text-red-800 text-lg">절대 피해야 할 질문법</h3>
+              </div>
+              <div className="p-6 space-y-6">
+                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                  <p className="text-sm text-slate-700 italic">
+                    &quot;2학년 수행평가 4번부터 9번까지 빈칸에 넣을 답 전부 써줘.&quot;
+                  </p>
+                  <div className="mt-3 text-xs text-red-600 font-bold flex items-center">
+                    <span className="mr-1">↳</span> 실제 평가·제출 화면에서 본인이 쓸 수 없게 됩니다.
+                  </div>
+                </div>
+                <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                  <p className="text-sm text-slate-700 italic">
+                    &quot;Orange 그래프 캡처 줄 테니까 출처·해석까지 전부 대신 써줘.&quot;
+                  </p>
+                  <div className="mt-3 text-xs text-red-600 font-bold flex items-center">
+                    <span className="mr-1">↳</span> 표절·부정행위로 감점·0점 처리될 수 있습니다.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="mt-8 rounded-xl border border-amber-200 bg-amber-50/90 p-5 text-sm text-amber-950 leading-relaxed">
+            <p className="font-bold text-amber-900 mb-2">실제 평가·이 사이트 제출 시</p>
+            <p>
+              <strong>복사·붙여넣기</strong>가 되지 않거나 제한될 수 있습니다. AI가 만들어 준 문장을 그대로 외워서
+              쓰기보다, <strong>내가 이해한 말</strong>로 다시 쓰는 연습을 해 두세요.
+            </p>
           </div>
         </section>
 
