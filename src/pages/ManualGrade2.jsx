@@ -42,7 +42,7 @@ export default function ManualGrade2() {
         <p>Orange를 실행합니다. 왼쪽 <strong>위젯 목록</strong>에서 다음을 찾습니다.</p>
         <ManualUl
           items={[
-            '「Data」 카테고리 안의 File(파일) 위젯을 캔버스(가운데 작업판)로 끌어다 놓습니다.',
+            'Data 범주의 File 위젯을 캔버스(가운데 작업판)로 끌어다 놓습니다.',
             'File 위젯을 더블 클릭(또는 한 번 클릭 후 아래쪽 설정 영역)하여 저장해 둔 CSV를 선택합니다.',
             '인코딩이 UTF-8이면 한글 열 이름이 잘 보입니다. 깨지면 선생님께 문의하세요.',
           ]}
@@ -59,10 +59,11 @@ export default function ManualGrade2() {
         </p>
         <ManualUl
           items={[
-            '「Data Table」: 표가 제대로 읽혔는지 행·열을 확인할 때 유용합니다. File의 출력 연결점을 Data Table 입력에 연결합니다.',
-            '막대·원형 비율: 「Bar Plot」, 「Distributions」 등',
-            '두 변수 관계: 「Scatter Plot」',
-            '값의 퍼짐·이상치: 「Box Plot」',
+            'Data 범주의 Data Table: 표가 제대로 읽혔는지 행·열을 확인할 때 유용합니다. File 출력을 Data Table 입력에 연결합니다.',
+            'Data 범주의 Column Statistics: 열(변수)별 평균·최솟값·최댓값 등 요약을 볼 때',
+            'Visualize 범주의 Bar Plot, Distributions: 막대·비율·분포',
+            'Visualize 범주의 Scatter Plot: 두 변수 관계',
+            'Visualize 범주의 Box Plot: 값의 퍼짐·이상치',
           ]}
         />
         <p>

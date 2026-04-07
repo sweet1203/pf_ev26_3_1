@@ -41,11 +41,14 @@ export default function ManualGrade3() {
       <ManualStep n={2} title="Orange에서 데이터 불러오기">
         <ManualUl
           items={[
-            'Data → File 위젯을 캔버스에 놓고 CSV를 지정합니다.',
-            'Data Table로 연결해 행 수, 결측치, 열 타입이 기대와 같은지 봅니다.',
+            '왼쪽 Data 범주의 File 위젯을 캔버스에 놓고 CSV를 지정합니다.',
+            'File 출력을 Data 범주의 Data Table 입력에 연결해 행 수, 결측치, 열 타입이 기대와 같은지 봅니다.',
           ]}
         />
-        <ManualTip>일부 열이 숫자가 아니라 글자로 인식되면 Feature Constructor 등으로 다루기 전에 선생님과 상의할 수 있습니다.</ManualTip>
+        <ManualTip>
+          일부 열이 숫자가 아니라 글자로 인식되면 Transform 범주의 Feature Constructor 등으로 다루기 전에 선생님과 상의할 수
+          있습니다.
+        </ManualTip>
       </ManualStep>
 
       <ManualStep n={3} title="분석 목적에 맞는 위젯 구성하기">
@@ -55,9 +58,9 @@ export default function ManualGrade3() {
         </p>
         <ManualUl
           items={[
-            '그룹별 평균·분포 비교: Box Plot, Bar Plot, Distributions 등. 범주형 열을 “그룹” 축에 두는 연습을 하세요.',
-            '두 수치 변수 관계: Scatter Plot + 필요 시 선형 모형 위젯(과정에서 배운 범위 내)',
-            '기초 통계 수치: Orange의 Data → Statistics 또는 관련 요약 위젯으로 평균·표준편차·최댓값·최솟값 등을 확인할 수 있습니다. (버전·메뉴명은 화면 기준)',
+            '그룹별 평균·분포 비교: Visualize 범주의 Box Plot, Bar Plot, Distributions 등. 범주형 열을 “그룹” 축에 두는 연습을 하세요.',
+            '두 수치 변수 관계: Visualize의 Scatter Plot. 필요 시 Model 범주의 Linear Regression(선형 회귀) 등(과정에서 배운 범위 내)',
+            '기초 통계 수치: Data 범주의 Column Statistics 위젯으로 열(변수)별 평균·분산·최댓값·최솟값 등을 확인합니다. (설치 버전에 따라 표기가 조금 다를 수 있으니 화면에서 같은 이름을 찾으세요.)',
           ]}
         />
         <p>

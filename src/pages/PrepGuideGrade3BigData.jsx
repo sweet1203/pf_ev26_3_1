@@ -270,8 +270,8 @@ export default function PrepGuideGrade3BigData() {
                 t: '데이터 불러오기',
                 d: (
                   <>
-                    <strong>File</strong> 및 <strong>Data Table</strong> 위젯 연결. 결측치(빈칸)는 없는지 전체적인
-                    생김새를 눈으로 훑어봅니다.
+                    왼쪽 <strong>Data</strong> 범주의 <strong>File</strong>로 CSV를 지정하고, 출력을{' '}
+                    <strong>Data Table</strong>에 연결합니다. 결측치(빈칸)와 행·열이 기대와 같은지 확인합니다.
                   </>
                 ),
                 icon: '📁',
@@ -281,8 +281,8 @@ export default function PrepGuideGrade3BigData() {
                 t: '기초 통계량 확인',
                 d: (
                   <>
-                    <strong>Feature Statistics</strong> 활용. 문항 11, 12번 핵심! 평균, 중앙값, 최댓값 등과 이상치를
-                    확인하세요.
+                    <strong>Data</strong> 범주의 <strong>Column Statistics</strong> 위젯으로 문항 11·12번에 필요한 평균,
+                    중앙값, 최댓값 등과 이상치를 확인하세요.
                   </>
                 ),
                 icon: '🔢',
@@ -290,7 +290,12 @@ export default function PrepGuideGrade3BigData() {
               {
                 n: '3',
                 t: '주제 구체화',
-                d: 'Distributions(분포), Box Plot(집단 비교), Scatter Plot(관계) 등 시각화 위젯으로 그래프를 그려봅니다.',
+                d: (
+                  <>
+                    <strong>Visualize</strong> 범주의 <strong>Distributions</strong>(분포), <strong>Box Plot</strong>(집단
+                    비교), <strong>Scatter Plot</strong>(두 변수 관계) 등으로 그래프를 그려봅니다.
+                  </>
+                ),
                 icon: '📈',
               },
               {
@@ -338,7 +343,10 @@ export default function PrepGuideGrade3BigData() {
                     '기법',
                     '"내가 \'스마트폰 사용 시간\'과 \'성적\'의 관계를 보고 싶은데, 보기 중 어떤 분석 기법을 선택하는 게 맞아?"',
                   ],
-                  ['해석', '"Orange3 산점도에서 점들이 우측 상단으로 향하고 있어. 보고서에 어떻게 해석해서 쓰면 좋을까?"'],
+                  [
+                    '해석',
+                    '"Orange 3 Scatter Plot에서 점들이 우측 상단으로 향하고 있어. 보고서에 어떻게 해석해서 쓰면 좋을까?"',
+                  ],
                   ['검증', '"수면 시간이 길수록 성적이 높다고 나왔어. \'상관관계와 인과관계\' 측면에서 주의할 점이 뭘까?"'],
                 ].map(([tag, text]) => (
                   <div key={tag} className="flex gap-4 items-start">
