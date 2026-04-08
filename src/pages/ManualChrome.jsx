@@ -12,12 +12,13 @@ export function ManualChrome({ grade, title, subtitle, children }) {
   const cardBorder = isG2 ? 'border-teal-100' : 'border-orange-100';
   const linkAccent = isG2 ? 'text-teal-800 hover:text-teal-950' : 'text-orange-800 hover:text-orange-950';
   const submitPath = isG2 ? '/grade2' : '/grade3';
+  const performHubPath = `/perform/grade${grade}`;
 
   return (
     <div className="max-w-3xl mx-auto pb-16">
       <div className="mb-6">
         <Link
-          to="/"
+          to={performHubPath}
           className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
         >
           <ArrowLeft size={18} />
