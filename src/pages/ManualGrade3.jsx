@@ -16,7 +16,7 @@ export default function ManualGrade3() {
           <li>Orange에서 불러와 표·통계로 데이터 파악</li>
           <li>분석 목적에 맞는 위젯 연결(그룹 비교, 상관, 분포 등)</li>
           <li>실행 후 표·그래프 확인</li>
-          <li>차트 이미지보내기로 저장</li>
+          <li>차트 창 좌측 하단 디스켓 버튼으로 PNG 저장</li>
           <li>전체 작업 .ows로 저장</li>
           <li>리로스쿨에 .ows·차트 이미지 2개 제출(파일명 규칙 확인)</li>
           <li>제출 페이지에서 서술형·통계 정리 제출</li>
@@ -95,12 +95,24 @@ export default function ManualGrade3() {
 
       <ManualStep n={5} title="차트 이미지보내기(저장)">
         <p>
-          제출·보고에 쓸 그래프를 <strong>이미지 파일</strong>로 저장합니다. 시각화 위젯 창에서 <strong>차트 제목</strong>을
-          본인의 <strong>분석 주제</strong>에 맞게 적어 둔 뒤, <strong>차트 이미지보내기</strong>·저장 아이콘, Save image,
-          또는 우클릭 메뉴로 <strong>PNG/JPG</strong>로 저장하세요. 파일 이름은 위 <strong>리로스쿨 제출 파일</strong> 안내와
-          같이 맞춥니다.
+          제출·보고에 쓸 그래프를 <strong>이미지 파일</strong>로 남깁니다. 차트(시각화) 위젯을 열었을 때, 창{' '}
+          <strong>좌측 하단</strong>에 있는 <strong>디스켓(저장) 모양</strong> 버튼을 누르면 이미지로 저장할 수 있습니다.
         </p>
-        <ManualTip>그래프가 여러 개면 대표 그래프 하나를 제출용으로 정하고, 그 창의 제목·파일명을 주제에 맞게 통일해 두세요.</ManualTip>
+        <ManualUl
+          items={[
+            '디스켓 버튼을 누르면 저장 대화상자가 열립니다.',
+            '저장할 폴더를 선택한 뒤, 차트 주제에 맞는 파일 이름으로 저장합니다.',
+            '파일 이름은 학번이름_차트제목.png 형식으로 맞춥니다. 위 리로스쿨 제출 파일 안내와 선생님의 안내를 따르세요.',
+          ]}
+        />
+        <p>
+          그래프 창에서 <strong>차트 제목</strong>을 본인의 <strong>분석 주제</strong>에 맞게 먼저 적어 두면, 파일 이름을
+          짓기 쉽습니다.
+        </p>
+        <ManualTip>
+          그래프가 여러 개면 대표 그래프 하나를 제출용으로 정한 뒤 그 창에서 저장하세요. 이미지가 잘리면 창 크기를 키운 뒤
+          다시 저장해 보세요.
+        </ManualTip>
       </ManualStep>
 
       <ManualStep n={6} title="Orange 작업 파일(.ows) 저장">
