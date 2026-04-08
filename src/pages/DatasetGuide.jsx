@@ -52,21 +52,13 @@ export default function DatasetGuide({ variant = 'assessment', fixedGrade }) {
     <div className="max-w-4xl mx-auto pb-16">
       <div className="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2">
         {isAssessment ? (
-          <>
-            <Link
-              to={performHubPath}
-              className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
-            >
-              <ArrowLeft size={18} />
-              {grade}학년 수행평가 안내
-            </Link>
-            <Link
-              to="/"
-              className="text-sm font-medium text-slate-500 hover:text-slate-800 underline underline-offset-2"
-            >
-              처음(학년 선택)
-            </Link>
-          </>
+          <Link
+            to={performHubPath}
+            className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+          >
+            <ArrowLeft size={18} />
+            {grade}학년 수행평가 안내
+          </Link>
         ) : (
           <Link
             to="/"
@@ -102,10 +94,7 @@ export default function DatasetGuide({ variant = 'assessment', fixedGrade }) {
                   <>
                     아래 파일은 <strong>수행평가 제출</strong>에 사용하는 CSV입니다(결측이 정리된 버전).{' '}
                     <strong>데이터셋 번호는 1번부터 20번까지 연속</strong>이며, 파일명 앞 숫자(01~20)와 같습니다. 연습만 할 때는{' '}
-                    <Link to="/datasets/practice" className="font-semibold underline underline-offset-2">
-                      연습용 데이터셋
-                    </Link>
-                    을 이용하세요.
+                    <strong>선생님이 알려 주는 연습용 데이터셋 주소</strong>를 이용하세요.
                   </>
                 ) : (
                   <>
@@ -160,14 +149,16 @@ export default function DatasetGuide({ variant = 'assessment', fixedGrade }) {
           </p>
         </div>
 
-        <div className="p-4 sm:px-6 border-b border-gray-100 bg-white">
-          <Link
-            to="/datasets"
-            className="text-sm font-medium text-slate-600 hover:text-slate-900 underline underline-offset-2"
-          >
-            ← 데이터셋 안내 처음(수행평가용·연습용 선택)
-          </Link>
-        </div>
+        {!isAssessment ? (
+          <div className="p-4 sm:px-6 border-b border-gray-100 bg-white">
+            <Link
+              to="/datasets"
+              className="text-sm font-medium text-slate-600 hover:text-slate-900 underline underline-offset-2"
+            >
+              ← 데이터셋 안내 처음(수행평가용·연습용 선택)
+            </Link>
+          </div>
+        ) : null}
 
         <div className="p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white">
           <div className="flex items-center gap-2 text-sm text-gray-600">
