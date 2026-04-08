@@ -339,7 +339,7 @@ export default function Grade3Submit() {
         <div className="space-y-6 bg-gray-50 p-6 rounded-xl border border-gray-200">
           <h2 className="text-xl font-bold text-gray-800 mb-2">③ 기초 통계 분석</h2>
           <TextAreaField
-            label="선택한 변수의 기초 통계값(평균, 중앙값, 최댓값, 최솟값, 표준편차 등)을 정리하여 작성하세요."
+            label="데이터의 특징을 나타내는 변수들의 기초 통계값(평균, 중앙값, 최댓값, 최솟값, 표준편차 등)을 정리하여 작성하세요."
             value={basicStats}
             onChange={(e) => setBasicStats(e.target.value)}
             rows={4}

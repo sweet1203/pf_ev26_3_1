@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, BookOpen, ClipboardList, ExternalLink, FileDown, GraduationCap } from 'lucide-react';
+import { BookOpen, ClipboardList, ExternalLink, FileDown, GraduationCap } from 'lucide-react';
 
 /** @param {{ grade: 2 | 3 }} props */
 export default function PerformAssessmentHub({ grade }) {
@@ -27,16 +27,6 @@ export default function PerformAssessmentHub({ grade }) {
 
   return (
     <div className="max-w-lg mx-auto pb-12">
-      <div className="mb-6">
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
-        >
-          <ArrowLeft size={18} />
-          처음으로
-        </Link>
-      </div>
-
       <div className={`rounded-2xl shadow-xl overflow-hidden border bg-white ${border}`}>
         <div className={`px-6 py-9 text-white bg-gradient-to-br ${hero}`}>
           <p className="text-sm font-medium opacity-90 mb-1 flex items-center gap-2">
