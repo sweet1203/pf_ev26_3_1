@@ -4,6 +4,7 @@ import { AlertCircle, CheckCircle } from 'lucide-react';
 import Home from './pages/Home.jsx';
 import Grade3Submit from './pages/Grade3Submit.jsx';
 import Grade2Submit from './pages/Grade2Submit.jsx';
+import DatasetHub from './pages/DatasetHub.jsx';
 import DatasetGuide from './pages/DatasetGuide.jsx';
 import PracticeGrade2 from './pages/PracticeGrade2.jsx';
 import PracticeGrade3 from './pages/PracticeGrade3.jsx';
@@ -59,7 +60,9 @@ export default function App() {
     <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
-        <Route path="/datasets" element={<DatasetGuide />} />
+        <Route path="/datasets" element={<DatasetHub />} />
+        <Route path="/datasets/assessment" element={<DatasetGuide variant="assessment" />} />
+        <Route path="/datasets/practice" element={<DatasetGuide variant="practice" />} />
         <Route path="/manual/grade2" element={<ManualGrade2 />} />
         <Route path="/manual/grade3" element={<ManualGrade3 />} />
         <Route path="/grade3" element={<Grade3Submit />} />

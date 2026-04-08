@@ -35,7 +35,7 @@ export default function Home() {
           className="flex w-full items-center justify-center gap-2 py-3.5 px-6 text-center text-sm font-semibold rounded-xl border-2 border-slate-300 bg-slate-50 text-slate-800 hover:bg-slate-100 hover:border-slate-400 transition-colors"
         >
           <Database size={18} className="text-slate-600" aria-hidden />
-          데이터셋 안내 · 다운로드
+          데이터셋 안내(수행평가·연습 선택)
         </Link>
         <div className="pt-2 border-t border-slate-200 space-y-2">
           <p className="text-xs font-semibold text-slate-500 text-center">수행평가 진행 안내 (Orange 3)</p>

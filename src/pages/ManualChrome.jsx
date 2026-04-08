@@ -39,8 +39,8 @@ export function ManualChrome({ grade, title, subtitle, children }) {
           </div>
         </div>
         <div className={`bg-white px-6 py-4 text-sm border-t ${cardBorder} flex flex-col sm:flex-row sm:flex-wrap gap-2 sm:gap-4`}>
-          <Link to="/datasets" className={`font-semibold underline underline-offset-2 ${linkAccent}`}>
-            데이터셋 안내 · CSV 다운로드
+          <Link to="/datasets/assessment" className={`font-semibold underline underline-offset-2 ${linkAccent}`}>
+            수행평가용 데이터셋 · CSV 다운로드
           </Link>
           <span className="hidden sm:inline text-gray-300">|</span>
           <Link to={submitPath} className={`font-semibold underline underline-offset-2 ${linkAccent}`}>

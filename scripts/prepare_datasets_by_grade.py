@@ -20,8 +20,9 @@ from pathlib import Path
 SCRIPT_DIR = Path(__file__).resolve().parent
 ROOT = SCRIPT_DIR.parent
 SRC_DIR = ROOT / "dataset"
-OUT_G2 = SRC_DIR / "grade2"
-OUT_G3 = SRC_DIR / "grade3"
+# 연습용: 결측 등 원본에 가까운 정리본. 수행평가용은 dataset/assessment/ (별도 유지·동기화).
+OUT_G2 = SRC_DIR / "practice" / "grade2"
+OUT_G3 = SRC_DIR / "practice" / "grade3"
 
 random.seed(42)
 OUT_ENCODING = "utf-8-sig"
@@ -1102,6 +1103,8 @@ def clear_grade_output_csvs(out_dir: Path) -> None:
 
 
 def main() -> None:
+    OUT_G2.mkdir(parents=True, exist_ok=True)
+    OUT_G3.mkdir(parents=True, exist_ok=True)
     clear_grade_output_csvs(OUT_G2)
     clear_grade_output_csvs(OUT_G3)
 
@@ -1147,18 +1150,17 @@ def main() -> None:
                 if (s["학년"] == "2학년") == (od == OUT_G2):
                     w.writerow(s)
 
-    notes = """dataset/grade2 · dataset/grade3 안내
+    notes = """dataset/practice/grade2 · grade3 (연습용) 안내
 ================================
 - UTF-8(BOM) CSV입니다. 엑셀에서 한글이 깨지면 '데이터 > 텍스트/CSV'로 가져오기 하세요.
-- 2학년 수행평가(정보): 출처·데이터 설명·항목(열)·그래프·해석 중심. 열 수를 줄여 보기 쉽게 했습니다.
-- 3학년 수행평가(빅데이터분석): 범주형·수치형 구분, 기초통계, 그룹 비교·관계·분포에 쓸 수 있게 열을 더 남겼습니다.
-- 결측치는 데이터마다 다릅니다. 파일명은 01~20번이 연속되도록 정리되어 있습니다.
+- 수행평가 제출용 파일은 dataset/assessment/grade2·grade3 를 사용하세요(사이트의 「수행평가용」 다운로드).
+- 이 폴더는 연습·결측 처리 학습용으로, 원본에 가까운 정리본입니다. 결측이 남아 있을 수 있습니다.
 - 원본은 dataset/ 루트 CSV입니다. 재생성: python scripts/prepare_datasets_by_grade.py
 """
     for od in (OUT_G2, OUT_G3):
         (od / "README_DATASETS.txt").write_text(notes, encoding="utf-8")
 
-    print("완료: dataset/grade2, dataset/grade3 및 요약·README 생성")
+    print("완료: dataset/practice/grade2, grade3 및 요약·README 생성")
 
 
 if __name__ == "__main__":

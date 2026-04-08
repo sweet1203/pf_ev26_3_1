@@ -1,12 +1,19 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, BookOpen, Download, FileSpreadsheet, GraduationCap } from 'lucide-react';
-import { DATASET_CATALOG, datasetFileUrl } from '../datasetCatalog.js';
+import {
+  DATASET_CATALOG,
+  datasetFileUrl,
+  datasetPhysicalFileName,
+  datasetStatsForPurpose,
+} from '../datasetCatalog.js';
 
-export default function DatasetGuide() {
+/** @param {{ variant?: 'assessment' | 'practice' }} props */
+export default function DatasetGuide({ variant = 'assessment' }) {
   const [grade, setGrade] = useState(2);
+  const purpose = variant;
+  const isAssessment = purpose === 'assessment';
 
-  const statsKey = grade === 2 ? 'g2' : 'g3';
   const submitPath = grade === 2 ? '/grade2' : '/grade3';
   const accentBtn =
     grade === 2
@@ -41,12 +48,31 @@ export default function DatasetGuide() {
             <div>
               <p className="text-sm font-medium opacity-90 mb-1 flex items-center gap-2">
                 <GraduationCap size={18} className="opacity-90" />
-                {grade}학년 · 수행평가 참고 자료
+                {grade}학년 · {isAssessment ? '수행평가 제출용 CSV' : '연습·실습용 CSV'}
               </p>
-              <h1 className="text-2xl sm:text-3xl font-bold leading-tight">데이터셋 안내 및 다운로드</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold leading-tight">
+                {isAssessment ? '수행평가용' : '연습용'} 데이터셋 안내 및 다운로드
+              </h1>
               <p className="mt-3 text-sm sm:text-base opacity-95 max-w-2xl leading-relaxed">
-                아래 파일은 수업용으로 정리한 CSV입니다. <strong>데이터셋 번호는 1번부터 20번까지 연속</strong>이며,
-                파일명 앞의 숫자(01~20)와 같습니다. 엑셀·구글 시트·Orange 등에서 열어 분석에 사용할 수 있습니다.
+                {isAssessment ? (
+                  <>
+                    아래 파일은 <strong>수행평가 제출</strong>에 사용하는 CSV입니다(결측이 정리된 버전).{' '}
+                    <strong>데이터셋 번호는 1번부터 20번까지 연속</strong>이며, 파일명 앞 숫자(01~20)와 같습니다. 연습만 할 때는{' '}
+                    <Link to="/datasets/practice" className="font-semibold underline underline-offset-2">
+                      연습용 데이터셋
+                    </Link>
+                    을 이용하세요.
+                  </>
+                ) : (
+                  <>
+                    아래 파일은 <strong>연습·Orange 실습·결측 학습</strong>용입니다. 일부 데이터에 <strong>결측치가 남아 있을 수</strong>
+                    있습니다. <strong>본 수행평가 제출</strong>에는{' '}
+                    <Link to="/datasets/assessment" className="font-semibold underline underline-offset-2">
+                      수행평가용 데이터셋
+                    </Link>
+                    에서 받은 CSV를 사용하세요.
+                  </>
+                )}{' '}
                 UTF-8(BOM)이므로 엑셀에서 한글이 깨지면 &apos;데이터 → 텍스트/CSV&apos;로 가져오기를 이용하세요.
               </p>
             </div>
@@ -86,6 +112,15 @@ export default function DatasetGuide() {
           </p>
         </div>
 
+        <div className="p-4 sm:px-6 border-b border-gray-100 bg-white">
+          <Link
+            to="/datasets"
+            className="text-sm font-medium text-slate-600 hover:text-slate-900 underline underline-offset-2"
+          >
+            ← 데이터셋 안내 처음(수행평가용 / 연습용 선택)
+          </Link>
+        </div>
+
         <div className="p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white">
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <FileSpreadsheet size={18} className="text-gray-500" />
@@ -93,22 +128,40 @@ export default function DatasetGuide() {
               총 <strong className="text-gray-900">{DATASET_CATALOG.length}</strong>개 (1~20번)
             </span>
           </div>
-          <Link
-            to={submitPath}
-            className={`inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold shadow-md transition-colors border sm:ml-auto ${accentBtn}`}
-          >
-            {grade}학년 제출 페이지
-          </Link>
+          {isAssessment ? (
+            <Link
+              to={submitPath}
+              className={`inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold shadow-md transition-colors border sm:ml-auto ${accentBtn}`}
+            >
+              {grade}학년 제출 페이지
+            </Link>
+          ) : (
+            <div className="flex flex-col sm:flex-row gap-2 sm:ml-auto sm:items-center">
+              <Link
+                to={grade === 2 ? '/practice/2-information' : '/practice/3-bigdata'}
+                className={`inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold shadow-md transition-colors border ${accentBtn}`}
+              >
+                {grade}학년 연습 페이지
+              </Link>
+              <Link
+                to="/datasets/assessment"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold border border-slate-300 bg-white text-slate-800 hover:bg-slate-50"
+              >
+                수행평가용 CSV 안내
+              </Link>
+            </div>
+          )}
         </div>
       </div>
 
       <ul className="space-y-4">
         {DATASET_CATALOG.map((d) => {
-          const st = d[statsKey];
-          const href = datasetFileUrl(grade, d.file);
+          const st = datasetStatsForPurpose(d, grade, purpose);
+          const physical = datasetPhysicalFileName(d, purpose);
+          const href = datasetFileUrl(grade, physical, purpose);
           return (
             <li
-              key={`${grade}-${d.file}`}
+              key={`${purpose}-${grade}-${d.num}`}
               className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden"
             >
               <div className="p-5 sm:p-6">
@@ -127,15 +180,16 @@ export default function DatasetGuide() {
                         <p className="text-xs text-slate-700 leading-relaxed">{d.source}</p>
                       </div>
                     ) : null}
-                    <p className="mt-3 text-xs text-gray-500 font-mono break-all">{d.file}</p>
+                    <p className="mt-3 text-xs text-gray-500 font-mono break-all">{physical}</p>
                     <p className="mt-2 text-xs text-gray-500">
                       약 <strong className="text-gray-700">{st.rows.toLocaleString()}</strong>행 ·{' '}
-                      <strong className="text-gray-700">{st.cols}</strong>열 (정리 스크립트 기준)
+                      <strong className="text-gray-700">{st.cols}</strong>열 (
+                      {isAssessment ? '수행평가용 파일 기준' : '연습용 파일 기준'})
                     </p>
                   </div>
                   <a
                     href={href}
-                    download={d.file}
+                    download={physical}
                     className={`inline-flex items-center justify-center gap-2 shrink-0 px-5 py-3 rounded-xl text-sm font-semibold text-white shadow-md transition-colors ${
                       grade === 2 ? 'bg-teal-600 hover:bg-teal-700' : 'bg-orange-600 hover:bg-orange-700'
                     }`}

@@ -30,9 +30,9 @@ export default function PracticeGrade3() {
       heroTitle="3학년 빅데이터분석 수행평가(연습용)"
       heroDescription={
         <>
-          아래 CSV는 <strong>3학년용</strong>으로 정리한 자료입니다(2학년용과 행·열이 다릅니다).{' '}
-          <strong>데이터셋 번호 1~20번</strong>은 파일명 앞 숫자(01~20)와 같습니다. 카드의 설명·출처를 읽고 폼의{' '}
-          「선택한 데이터」, 「변수」 란을 채울 때 활용하세요. UTF-8(BOM)이므로 엑셀에서 한글이 깨지면{' '}
+          아래 CSV는 <strong>3학년 연습용</strong>입니다(2학년용과 행·열이 다르며, 일부 결측이 있을 수 있음).{' '}
+          <strong>본 제출</strong>에는 <strong>수행평가용 데이터셋</strong>의 3학년 파일을 사용하세요.{' '}
+          <strong>데이터셋 번호 1~20번</strong>은 파일명 앞 숫자(01~20)와 같습니다. UTF-8(BOM)이므로 엑셀에서 한글이 깨지면{' '}
           <strong>데이터 → 텍스트/CSV</strong>로 가져오기를 사용하세요.
         </>
       }

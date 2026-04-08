@@ -13,7 +13,7 @@ export default function ManualGrade2() {
       <section className="rounded-xl border border-gray-200 bg-slate-50 p-5 text-sm leading-relaxed">
         <ManualH2>한눈에 보는 순서</ManualH2>
         <ol className="mt-3 list-decimal pl-5 space-y-1.5">
-          <li>CSV 데이터 받기 (이 사이트 데이터셋 안내)</li>
+          <li>CSV 데이터 받기 (이 사이트에서 수행평가용 데이터셋 선택)</li>
           <li>Orange 3에서 파일 불러오기</li>
           <li>위젯을 연결해 나만의 분석·그래프 화면 만들기</li>
           <li>실행해서 그래프 확인하기</li>
@@ -28,7 +28,7 @@ export default function ManualGrade2() {
       <ManualUl
         items={[
           '컴퓨터에 설치된 Orange 3 (최신 버전 권장, 무료)',
-          '선생님이 안내한 번호의 CSV 파일(데이터셋 안내 페이지에서 본인 학년용 다운로드)',
+          '선생님이 안내한 번호의 CSV 파일(수행평가용 데이터셋 페이지에서 본인 학년용 다운로드)',
           '과제 제출 방법은 선생님의 안내를 따르세요.',
         ]}
       />
@@ -39,7 +39,7 @@ export default function ManualGrade2() {
 
       <ManualStep n={1} title="CSV 데이터 받기">
         <p>
-          이 사이트에서 <strong>「데이터셋 안내 · 다운로드」</strong>로 들어가 2학년용 파일을 받습니다. 본인이 사용할
+          이 사이트에서 <strong>「데이터셋 안내」→「수행평가용 데이터셋」</strong>으로 들어가 2학년용 파일을 받습니다. 본인이 사용할
           데이터 번호(1~20번)에 맞는 CSV 하나를 저장해 두세요. 파일 이름은 바꾸지 않는 것이 좋습니다.
         </p>
       </ManualStep>

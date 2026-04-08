@@ -27,7 +27,7 @@ export default function ManualGrade3() {
       <ManualUl
         items={[
           'Orange 3',
-          '데이터셋 안내에서 받은 3학년용 CSV(열 구성이 2학년용보다 많을 수 있음)',
+          '수행평가용 데이터셋에서 받은 3학년용 CSV(열 구성이 2학년용보다 많을 수 있음)',
           '과제 제출 방법은 선생님의 안내를 따르세요.',
         ]}
       />
@@ -38,7 +38,7 @@ export default function ManualGrade3() {
 
       <ManualStep n={1} title="3학년용 CSV 받기">
         <p>
-          <strong>데이터셋 안내 · 다운로드</strong>에서 학년을 <strong>3학년</strong>으로 맞춘 뒤, 본인 데이터 번호의
+          <strong>데이터셋 안내 → 수행평가용 데이터셋</strong>에서 학년을 <strong>3학년</strong>으로 맞춘 뒤, 본인 데이터 번호의
           파일을 저장합니다. 범주형·수치형 변수가 함께 있는지 미리 열 이름을 읽어 두면 분석 목적을 잡기 쉽습니다.
         </p>
       </ManualStep>

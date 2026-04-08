@@ -1,7 +1,13 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import RiroschoolSubmitNotice from '../components/RiroschoolSubmitNotice.jsx';
 import { BookOpen, Download, ExternalLink, FileSpreadsheet, GraduationCap } from 'lucide-react';
-import { DATASET_CATALOG, datasetFileUrl } from '../datasetCatalog.js';
+import {
+  DATASET_CATALOG,
+  datasetFileUrl,
+  datasetPhysicalFileName,
+  datasetStatsForPurpose,
+} from '../datasetCatalog.js';
 
 /**
  * 연습용 전용 페이지. 제출은 Google 폼 버튼으로 연결. prepGuideTo가 있으면 동일 스타일로 대비 가이드 링크 표시.
@@ -16,8 +22,8 @@ export default function PracticeGradePage({
   howToSteps,
   howToNote,
   prepGuideTo,
+  datasetPurpose = 'practice',
 }) {
-  const statsKey = grade === 2 ? 'g2' : 'g3';
   const accentBtn =
     grade === 2
       ? 'bg-teal-700 hover:bg-teal-800 border-teal-900/20 text-white'
@@ -92,6 +98,23 @@ export default function PracticeGradePage({
         </div>
       </div>
 
+      {datasetPurpose === 'practice' ? (
+        <div
+          className={`mb-6 rounded-xl border px-4 py-3 text-sm leading-relaxed ${
+            grade === 2 ? 'border-teal-200 bg-teal-50/90 text-teal-950' : 'border-orange-200 bg-orange-50/90 text-orange-950'
+          }`}
+        >
+          이 목록의 CSV는 <strong>연습용</strong>입니다(결측이 있을 수 있음).{' '}
+          <Link
+            to="/datasets/assessment"
+            className="font-semibold underline underline-offset-2 hover:opacity-90"
+          >
+            수행평가용 데이터셋
+          </Link>
+          에서 받은 파일로 본 제출을 준비하세요.
+        </div>
+      ) : null}
+
       {(grade === 2 || grade === 3) && (
         <div className="mb-8">
           <RiroschoolSubmitNotice
@@ -123,11 +146,12 @@ export default function PracticeGradePage({
 
       <ul className="space-y-4">
         {DATASET_CATALOG.map((d) => {
-          const st = d[statsKey];
-          const href = datasetFileUrl(grade, d.file);
+          const st = datasetStatsForPurpose(d, grade, datasetPurpose);
+          const physical = datasetPhysicalFileName(d, datasetPurpose);
+          const href = datasetFileUrl(grade, physical, datasetPurpose);
           return (
             <li
-              key={`practice-${grade}-${d.file}`}
+              key={`practice-${datasetPurpose}-${grade}-${d.num}`}
               className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden"
             >
               <div className="p-5 sm:p-6">
@@ -146,15 +170,15 @@ export default function PracticeGradePage({
                         <p className="text-xs text-slate-700 leading-relaxed">{d.source}</p>
                       </div>
                     ) : null}
-                    <p className="mt-3 text-xs text-gray-500 font-mono break-all">{d.file}</p>
+                    <p className="mt-3 text-xs text-gray-500 font-mono break-all">{physical}</p>
                     <p className="mt-2 text-xs text-gray-500">
                       약 <strong className="text-gray-700">{st.rows.toLocaleString()}</strong>행 ·{' '}
-                      <strong className="text-gray-700">{st.cols}</strong>열 (정리 스크립트 기준)
+                      <strong className="text-gray-700">{st.cols}</strong>열 (연습용 파일 기준)
                     </p>
                   </div>
                   <a
                     href={href}
-                    download={d.file}
+                    download={physical}
                     className={`inline-flex items-center justify-center gap-2 shrink-0 px-5 py-3 rounded-xl text-sm font-semibold text-white shadow-md transition-colors ${downloadBtn}`}
                   >
                     <Download size={18} />

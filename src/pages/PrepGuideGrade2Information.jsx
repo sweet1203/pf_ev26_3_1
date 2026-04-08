@@ -254,7 +254,7 @@ export default function PrepGuideGrade2Information() {
                 t: '문항 4. 출처 작성',
                 p: '데이터를 어디서 가져왔는지 명확히 밝혀야 합니다.',
                 ex: '예시:',
-                box: 'Kaggle 공개 데이터, 통계청, 기상청, 수업 제공 데이터(05_세계행복.csv) 등',
+                box: 'Kaggle 공개 데이터, 통계청, 기상청, 수업 제공 데이터(test05_세계행복.csv 등 수행평가용) 등',
               },
               {
                 icon: '📝',
