@@ -9,6 +9,7 @@ import { validateSubmissionIdentity } from '../validateStudentId.js';
 
 function buildTextDataPayload(state) {
   const {
+    dataName,
     dataSource,
     dataDescription,
     dataColumns,
@@ -17,6 +18,7 @@ function buildTextDataPayload(state) {
     dataInterpretation,
   } = state;
   return {
+    dataName,
     dataSource,
     dataDescription,
     dataColumns,
@@ -32,6 +34,7 @@ export default function Grade2Submit() {
   const [studentName, setStudentName] = useState('');
   const [studentClass, setStudentClass] = useState('');
 
+  const [dataName, setDataName] = useState('');
   const [dataSource, setDataSource] = useState('');
   const [dataDescription, setDataDescription] = useState('');
   const [dataColumns, setDataColumns] = useState('');
@@ -50,6 +53,7 @@ export default function Grade2Submit() {
     setStudentId('');
     setStudentName('');
     setStudentClass('');
+    setDataName('');
     setDataSource('');
     setDataDescription('');
     setDataColumns('');
@@ -67,7 +71,13 @@ export default function Grade2Submit() {
       return;
     }
 
+    if (!dataName.trim()) {
+      showToast('데이터 이름을 작성하세요.', 'error');
+      return;
+    }
+
     const textData = buildTextDataPayload({
+      dataName: dataName.trim(),
       dataSource,
       dataDescription,
       dataColumns,
@@ -189,6 +199,25 @@ export default function Grade2Submit() {
 
         <div className="space-y-6 bg-gray-50 p-6 rounded-xl border border-gray-200">
           <h2 className="text-xl font-bold text-gray-800 mb-2">① 데이터 수집</h2>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">
+              수행평가용 데이터셋의 이름(데이터 이름)을 작성하세요. <span className="text-red-500">*</span>
+            </label>
+            <p className="text-xs text-gray-500 mb-2 leading-relaxed">
+              👉 수행평가용 데이터셋 안내에 나온 번호·제목 또는 파일명에 가까운 이름으로 적으세요.
+            </p>
+            <input
+              type="text"
+              autoComplete="off"
+              placeholder="예: 05. 세계 행복 지수 (또는 test05_세계행복)"
+              className={inputClass}
+              value={dataName}
+              onChange={(e) => setDataName(e.target.value)}
+              onPaste={handleTextPaste}
+              onDrop={handleTextDrop}
+              onBeforeInput={handleBeforeInput}
+            />
+          </div>
           <TextAreaField
             label="데이터의 출처를 작성하세요."
             hint="👉 (예: 공공데이터포털, 통계청 등)"

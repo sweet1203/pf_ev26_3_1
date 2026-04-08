@@ -12,7 +12,7 @@
  * 기기 또는 OS
  *
  * [시트2] 1행 헤더 예시
- * 제출일시, 학번, 이름, 반, 데이터출처, 데이터설명, 데이터항목, 그래프 종류, 그래프이유, 데이터 해석,
+ * 제출일시, 학번, 이름, 반, 데이터명, 데이터출처, 데이터설명, 데이터항목, 그래프 종류, 그래프이유, 데이터 해석,
  * 기기 또는 OS
  *
  * 배포: 배포 → 새 배포 → 유형「웹 앱」→ 액세스「모든 사용자」
@@ -42,6 +42,7 @@ function doPost(e) {
         data.studentId || '',
         data.studentName || '',
         data.studentClass || '',
+        td.dataName || '',
         td.dataSource || '',
         td.dataDescription || '',
         td.dataColumns || '',

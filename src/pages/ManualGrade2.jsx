@@ -136,8 +136,8 @@ export default function ManualGrade2() {
 
       <ManualStep n={8} title="제출 페이지 글 작성">
         <p>
-          이 사이트의 <strong>2학년 제출</strong> 양식에는 데이터 출처, 수집·설명, 열 이름, 그래프 종류와 선택 이유,
-          해석 글 등을 적습니다. Orange에서 만든 내용과 <strong>일치</strong>하게 쓰면 됩니다.
+          이 사이트의 <strong>2학년 제출</strong> 양식에는 <strong>데이터 이름</strong>, 데이터 출처, 수집·설명, 열 이름,
+          그래프 종류와 선택 이유, 해석 글 등을 적습니다. Orange에서 만든 내용과 <strong>일치</strong>하게 쓰면 됩니다.
         </p>
       </ManualStep>
 
