@@ -204,12 +204,12 @@ export default function Grade2Submit() {
               수행평가용 데이터셋의 이름(데이터 이름)을 작성하세요. <span className="text-red-500">*</span>
             </label>
             <p className="text-xs text-gray-500 mb-2 leading-relaxed">
-              👉 수행평가용 데이터셋 안내에 나온 번호·제목 또는 파일명에 가까운 이름으로 적으세요.
+              👉 수행평가용 데이터셋 안내에 나온 <strong>파일명</strong>과 같게 적으세요.
             </p>
             <input
               type="text"
               autoComplete="off"
-              placeholder="예: 05. 세계 행복 지수 (또는 test05_세계행복)"
+              placeholder="예: test01_학생시험점수.csv"
               className={inputClass}
               value={dataName}
               onChange={(e) => setDataName(e.target.value)}

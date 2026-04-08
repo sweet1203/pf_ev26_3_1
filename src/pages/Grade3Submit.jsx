@@ -251,6 +251,8 @@ export default function Grade3Submit() {
           <h2 className="text-xl font-bold text-gray-800 mb-2">① 데이터 이해 + 분석 목적</h2>
           <TextAreaField
             label="선택한 데이터의 이름은 무엇인가요?"
+            hint="👉 수행평가용 데이터셋 안내에 나온 파일명과 같게 적으세요."
+            placeholder="예: test01_학생시험점수.csv"
             value={dataName}
             onChange={(e) => setDataName(e.target.value)}
             rows={2}
