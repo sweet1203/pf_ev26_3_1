@@ -34,13 +34,14 @@ export default function ManualGrade2() {
       />
 
       <div className="mb-6">
-        <RiroschoolSubmitNotice className="border-teal-300 bg-teal-50/90" />
+        <RiroschoolSubmitNotice grade={2} className="border-teal-300 bg-teal-50/90" />
       </div>
 
       <ManualStep n={1} title="CSV 데이터 받기">
         <p>
-          이 사이트에서 <strong>「데이터셋 안내」→「수행평가용 데이터셋」</strong>으로 들어가 2학년용 파일을 받습니다. 본인이 사용할
-          데이터 번호(1~20번)에 맞는 CSV 하나를 저장해 두세요. 파일 이름은 바꾸지 않는 것이 좋습니다.
+          이 사이트의 <strong>데이터셋 안내</strong>에서 <strong>2학년 수행평가용 데이터셋</strong>을 고르거나,{' '}
+          <strong>2학년 수행평가 안내</strong> 화면에서 들어가 2학년 전용 페이지에서 파일을 받습니다. 본인이 사용할 데이터
+          번호(1~20번)에 맞는 CSV 하나를 저장해 두세요. 파일 이름은 바꾸지 않는 것이 좋습니다.
         </p>
       </ManualStep>
 
@@ -67,7 +68,7 @@ export default function ManualGrade2() {
           items={[
             'Data 범주의 Data Table: 표가 제대로 읽혔는지 행·열을 확인할 때 유용합니다. File 출력을 Data Table 입력에 연결합니다.',
             'Data 범주의 Column Statistics: 열(변수)별 평균·최솟값·최댓값 등 요약을 볼 때',
-            'Visualize 범주의 Bar Plot, Distributions: 막대·분포(히스토그램 등). 원 그래프는 수업에서 다루지 않으므로 수행평가에서도 쓰지 않습니다.',
+            'Visualize 범주의 Bar Plot, Distributions: 막대·분포(히스토그램 등). 데이터와 질문에 따라 다른 시각화 위젯을 써도 됩니다.',
             'Visualize 범주의 Scatter Plot: 두 변수 관계',
             'Visualize 범주의 Box Plot: 값의 퍼짐·이상치',
           ]}
@@ -76,13 +77,17 @@ export default function ManualGrade2() {
           연결 방법: 한 위젯 오른쪽의 <strong>작은 원(출력)</strong>에서 다른 위젯 왼쪽의 <strong>원(입력)</strong>으로
           선을 드래그합니다. 데이터가 흐르는 방향이 맞는지 확인하세요.
         </p>
+        <p>
+          <strong>차트(시각화) 위젯</strong>은 수업에서 다룬 범위 안에서, <strong>본인이 고른 데이터와 차트·분석 목적</strong>
+          (비교, 추이, 분포, 두 변수 관계 등)에 가장 잘 맞는 것을 고르세요.
+        </p>
       </ManualStep>
 
       <ManualStep n={4} title="실행하고 그래프 확인하기">
         <ManualUl
           items={[
             '차트 위젯을 더블 클릭해 창을 엽니다.',
-            '축에 넣을 열(변수)을 위젯 안에서 선택합니다. 범주형·수치형을 바꿔 가며 보면서 가장 잘 드러나는 그래프를 고릅니다.',
+            '분석 목적에 맞는 위젯을 골랐는지 다시 점검한 뒤, 축에 넣을 열(변수)을 위젯 안에서 선택합니다. 범주형·수치형을 바꿔 가며 보면서 가장 잘 드러나는 그래프를 고릅니다.',
             '제목·범례가 없다면 보고서용으로 무엇을 그린 그래프인지 메모해 두세요.',
           ]}
         />
@@ -110,8 +115,9 @@ export default function ManualGrade2() {
       <ManualStep n={6} title="Orange 파일(.ows) 저장하기">
         <p>
           선생님이 요구하는 <strong>작업 전체(위젯 배치·연결 상태)</strong>를 파일로 남깁니다. Orange 메뉴에서{' '}
-          <strong>File → Save As…</strong> 를 선택하고, 확장자가 <strong>.ows</strong> 인지 확인한 뒤 저장합니다. 파일
-          이름은 위 안내와 같이 <strong>학번이름_수행1.ows</strong> 형태로 맞춥니다.
+          <strong>File → Save</strong>를 누른 뒤, 저장 대화상자에서 <strong>바탕화면\정보</strong> 폴더로 들어가 저장 위치를
+          맞춥니다. 확장자가 <strong>.ows</strong>인지 확인하고, 파일 이름은 위 안내와 같이{' '}
+          <strong>학번이름_수행1.ows</strong> 형태로 저장합니다.
         </p>
         <ManualUl
           items={[
@@ -171,7 +177,7 @@ export default function ManualGrade2() {
         <ManualUl
           items={[
             'CSV를 열지 않고 빈 위젯만 연결한 채 저장하는 경우',
-            '수업에서 다루지 않은 원 그래프만 고르거나, 데이터에 맞지 않는 그래프를 고른 경우',
+            '분석 목적과 맞지 않는 그래프만 고르거나, 친구 화면을 그대로 따라 연결만 한 경우',
             '차트만 올리거나 .ows만 올려 리로스쿨에 총 2개가 되지 않는 경우',
             '차트 제목·파일 이름이 분석 주제와 맞지 않게 저장하는 경우',
             '다른 학생 파일 이름 그대로 제출하는 경우 → 반드시 본인 학번·이름이 드러나게',

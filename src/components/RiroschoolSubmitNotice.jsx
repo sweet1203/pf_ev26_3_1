@@ -2,8 +2,23 @@ import React from 'react';
 
 /**
  * 실제 수행평가 시 리로스쿨 등에 올리는 Orange·차트 파일 규칙 안내 (2·3학년 공통)
+ * @param {{ className?: string, grade?: 2 | 3 }} props
  */
-export default function RiroschoolSubmitNotice({ className = '' }) {
+export default function RiroschoolSubmitNotice({ className = '', grade }) {
+  const saveFolderHint =
+    grade === 2 ? (
+      <>
+        <strong>바탕화면\정보</strong> 폴더를 선택한 뒤,
+      </>
+    ) : grade === 3 ? (
+      <>
+        <strong>바탕화면\빅데이터</strong> 폴더를 선택한 뒤,
+      </>
+    ) : (
+      <>
+        해당 학년 폴더(2학년 <strong>바탕화면\정보</strong>, 3학년 <strong>바탕화면\빅데이터</strong>)를 선택한 뒤,
+      </>
+    );
   return (
     <aside
       className={`rounded-xl border-2 border-indigo-200 bg-indigo-50/95 p-4 sm:p-5 text-sm text-slate-800 leading-relaxed shadow-sm ${className}`}
@@ -18,10 +33,10 @@ export default function RiroschoolSubmitNotice({ className = '' }) {
       </p>
       <ol className="list-decimal pl-5 space-y-2.5 text-slate-800">
         <li>
-          <strong className="text-indigo-900">Orange 전체 작업 (.ows)</strong> — Orange 메뉴 <strong>File → Save As…</strong>
-          로 저장합니다. 파일 이름: <code className="text-xs bg-white/80 px-1.5 py-0.5 rounded border border-indigo-100">
-            학번이름_수행1.ows
-          </code>
+          <strong className="text-indigo-900">Orange 전체 작업 (.ows)</strong> — Orange 메뉴에서 <strong>File → Save</strong>를
+          누릅니다. 저장 대화상자에서 {saveFolderHint} 확장자가 <strong>.ows</strong>인지 확인하고 파일 이름은{' '}
+          <code className="text-xs bg-white/80 px-1.5 py-0.5 rounded border border-indigo-100">학번이름_수행1.ows</code> 형태로
+          맞춥니다.
           <span className="block mt-1 text-xs text-slate-600">
             예: 학번 30115, 이름 홍길동 → <code className="font-mono">30115홍길동_수행1.ows</code> (선생님의 안내에 따름)
           </span>

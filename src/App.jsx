@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Routes, Route, Outlet } from 'react-router-dom';
+import { Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import { AlertCircle, CheckCircle } from 'lucide-react';
 import Home from './pages/Home.jsx';
 import Grade3Submit from './pages/Grade3Submit.jsx';
@@ -64,7 +64,9 @@ export default function App() {
         <Route path="/perform/grade2" element={<PerformAssessmentHub grade={2} />} />
         <Route path="/perform/grade3" element={<PerformAssessmentHub grade={3} />} />
         <Route path="/datasets" element={<DatasetHub />} />
-        <Route path="/datasets/assessment" element={<DatasetGuide variant="assessment" />} />
+        <Route path="/datasets/assessment" element={<Navigate to="/datasets" replace />} />
+        <Route path="/datasets/assessment/grade2" element={<DatasetGuide variant="assessment" fixedGrade={2} />} />
+        <Route path="/datasets/assessment/grade3" element={<DatasetGuide variant="assessment" fixedGrade={3} />} />
         <Route path="/datasets/practice" element={<DatasetGuide variant="practice" />} />
         <Route path="/manual/grade2" element={<ManualGrade2 />} />
         <Route path="/manual/grade3" element={<ManualGrade3 />} />

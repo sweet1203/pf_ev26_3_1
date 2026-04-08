@@ -428,7 +428,7 @@ export default function PrepGuideGrade3BigData() {
           </div>
 
           <div className="max-w-4xl mx-auto mb-12">
-            <RiroschoolSubmitNotice className="border-amber-300 bg-amber-50/95 border-2" />
+            <RiroschoolSubmitNotice grade={3} className="border-amber-300 bg-amber-50/95 border-2" />
           </div>
 
           <div className="bg-stone-800 rounded-2xl p-8 text-center text-white shadow-lg">

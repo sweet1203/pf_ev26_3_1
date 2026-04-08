@@ -293,8 +293,8 @@ export default function PrepGuideGrade2Information() {
           </div>
           <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
             <p className="text-sm text-slate-600 px-4 pt-4 md:px-6 border-b border-slate-100 pb-3">
-              2학년 수업에서는 <strong>막대·꺾은선·산점도</strong>를 다룹니다. 원 그래프는 배우지 않았으므로 수행평가에서도
-              선택하지 않습니다.
+              2학년 수업에서는 <strong>막대·꺾은선·산점도</strong>를 중심으로 다룹니다. 수행평가에서는{' '}
+              <strong>본인 데이터와 분석 목적</strong>에 가장 잘 맞는 그래프를 고르고, 그 선택 이유를 설명할 수 있어야 합니다.
             </p>
             <div className="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-200">
               {[
@@ -435,7 +435,7 @@ export default function PrepGuideGrade2Information() {
         </section>
 
         <div className="max-w-4xl mx-auto">
-          <RiroschoolSubmitNotice className="border-blue-300 bg-blue-50/90" />
+          <RiroschoolSubmitNotice grade={2} className="border-blue-300 bg-blue-50/90" />
         </div>
 
         <section id="section-step3" className="scroll-mt-28">

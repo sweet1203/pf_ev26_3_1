@@ -106,7 +106,7 @@ export default function PracticeGradePage({
         >
           이 목록의 CSV는 <strong>연습용</strong>입니다(결측이 있을 수 있음).{' '}
           <Link
-            to="/datasets/assessment"
+            to={`/datasets/assessment/grade${grade}`}
             className="font-semibold underline underline-offset-2 hover:opacity-90"
           >
             수행평가용 데이터셋
@@ -118,6 +118,7 @@ export default function PracticeGradePage({
       {(grade === 2 || grade === 3) && (
         <div className="mb-8">
           <RiroschoolSubmitNotice
+            grade={grade}
             className={
               grade === 2 ? 'border-teal-300 bg-teal-50/90' : 'border-orange-300 bg-orange-50/90'
             }

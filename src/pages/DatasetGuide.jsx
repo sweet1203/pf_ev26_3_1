@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ArrowLeft, BookOpen, Download, ExternalLink, FileSpreadsheet, GraduationCap } from 'lucide-react';
 import {
   DATASET_CATALOG,
@@ -28,19 +28,19 @@ function SourceAssessmentText({ text }) {
   );
 }
 
-/** @param {{ variant?: 'assessment' | 'practice' }} props */
-export default function DatasetGuide({ variant = 'assessment' }) {
-  const [searchParams] = useSearchParams();
-  const gradeParam = searchParams.get('grade');
-  const gradeLocked = gradeParam === '2' || gradeParam === '3';
+/**
+ * @param {{ variant?: 'assessment' | 'practice', fixedGrade?: 2 | 3 }} props
+ * 수행평가용(assessment)은 fixedGrade와 함께 /datasets/assessment/grade2|3 에서만 사용합니다.
+ */
+export default function DatasetGuide({ variant = 'assessment', fixedGrade }) {
   const [internalGrade, setInternalGrade] = useState(2);
-  const grade = gradeLocked ? Number(gradeParam) : internalGrade;
-
   const purpose = variant;
   const isAssessment = purpose === 'assessment';
+  const grade = isAssessment ? fixedGrade : internalGrade;
 
   const submitPath = grade === 2 ? '/grade2' : '/grade3';
   const performHubPath = `/perform/grade${grade}`;
+  const assessmentPathForGrade = `/datasets/assessment/grade${grade}`;
   const accentBtn =
     grade === 2
       ? 'bg-teal-700 hover:bg-teal-800 border-teal-900/20 text-white'
@@ -51,7 +51,7 @@ export default function DatasetGuide({ variant = 'assessment' }) {
   return (
     <div className="max-w-4xl mx-auto pb-16">
       <div className="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2">
-        {isAssessment && gradeLocked ? (
+        {isAssessment ? (
           <>
             <Link
               to={performHubPath}
@@ -111,8 +111,8 @@ export default function DatasetGuide({ variant = 'assessment' }) {
                   <>
                     아래 파일은 <strong>연습·Orange 실습·결측 학습</strong>용입니다. 일부 데이터에 <strong>결측치가 남아 있을 수</strong>
                     있습니다. <strong>본 수행평가 제출</strong>에는{' '}
-                    <Link to="/datasets/assessment" className="font-semibold underline underline-offset-2">
-                      수행평가용 데이터셋
+                    <Link to={`/datasets/assessment/grade${grade}`} className="font-semibold underline underline-offset-2">
+                      {grade}학년 수행평가용 데이터셋
                     </Link>
                     에서 받은 CSV를 사용하세요.
                   </>
@@ -125,21 +125,7 @@ export default function DatasetGuide({ variant = 'assessment' }) {
         </div>
 
         <div className="p-5 sm:p-6 border-b border-gray-100 bg-gray-50/80">
-          {gradeLocked ? (
-            <>
-              <p className="text-sm font-semibold text-gray-800 mb-2">
-                {grade}학년 전용 링크로 열림
-              </p>
-              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
-                주소에 <span className="font-mono text-gray-800">?grade={grade}</span>가 포함되어 있어 다른 학년으로 바꿀 수 없습니다. 다른 학년 CSV가
-                필요하면{' '}
-                <Link to="/" className="font-semibold underline underline-offset-2">
-                  처음 화면
-                </Link>
-                에서 해당 학년 수행평가 안내로 들어가 주세요.
-              </p>
-            </>
-          ) : (
+          {!isAssessment ? (
             <>
               <p className="text-sm font-semibold text-gray-700 mb-3">학년 선택</p>
               <div className="flex flex-col sm:flex-row gap-3">
@@ -159,8 +145,8 @@ export default function DatasetGuide({ variant = 'assessment' }) {
                 </button>
               </div>
             </>
-          )}
-          <p className="mt-4 text-xs sm:text-sm text-gray-600 leading-relaxed">
+          ) : null}
+          <p className={`text-xs sm:text-sm text-gray-600 leading-relaxed ${!isAssessment ? 'mt-4' : ''}`}>
             {grade === 2 ? (
               <>
                 2학년용 파일은 그래프·추이·해석 중심 활동에 맞게 <strong>열 수와 행 수를 다소 줄인</strong> 버전입니다.
@@ -176,12 +162,10 @@ export default function DatasetGuide({ variant = 'assessment' }) {
 
         <div className="p-4 sm:px-6 border-b border-gray-100 bg-white">
           <Link
-            to={isAssessment && gradeLocked ? performHubPath : '/datasets'}
+            to="/datasets"
             className="text-sm font-medium text-slate-600 hover:text-slate-900 underline underline-offset-2"
           >
-            {isAssessment && gradeLocked
-              ? `← ${grade}학년 수행평가 안내로`
-              : '← 데이터셋 안내 처음(수행평가용 / 연습용 선택)'}
+            ← 데이터셋 안내 처음(수행평가용·연습용 선택)
           </Link>
         </div>
 
@@ -211,10 +195,10 @@ export default function DatasetGuide({ variant = 'assessment' }) {
                 {grade}학년 연습 페이지
               </Link>
               <Link
-                to="/datasets/assessment"
+                to={assessmentPathForGrade}
                 className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold border border-slate-300 bg-white text-slate-800 hover:bg-slate-50"
               >
-                수행평가용 CSV 안내
+                {grade}학년 수행평가용 CSV 안내
               </Link>
             </div>
           )}

@@ -33,13 +33,14 @@ export default function ManualGrade3() {
       />
 
       <div className="mb-6">
-        <RiroschoolSubmitNotice className="border-orange-300 bg-orange-50/90" />
+        <RiroschoolSubmitNotice grade={3} className="border-orange-300 bg-orange-50/90" />
       </div>
 
       <ManualStep n={1} title="3학년용 CSV 받기">
         <p>
-          <strong>데이터셋 안내 → 수행평가용 데이터셋</strong>에서 학년을 <strong>3학년</strong>으로 맞춘 뒤, 본인 데이터 번호의
-          파일을 저장합니다. 범주형·수치형 변수가 함께 있는지 미리 열 이름을 읽어 두면 분석 목적을 잡기 쉽습니다.
+          <strong>데이터셋 안내</strong>에서 <strong>3학년 수행평가용 데이터셋</strong>을 고르거나,{' '}
+          <strong>3학년 수행평가 안내</strong> 화면에서 들어가 3학년 전용 페이지에서 본인 데이터 번호의 파일을 저장합니다.
+          범주형·수치형 변수가 함께 있는지 미리 열 이름을 읽어 두면 분석 목적을 잡기 쉽습니다.
         </p>
       </ManualStep>
 
@@ -58,19 +59,27 @@ export default function ManualGrade3() {
 
       <ManualStep n={3} title="분석 목적에 맞는 위젯 구성하기">
         <p>
-          빅데이터분석 수행평가는 <strong>집단 비교</strong>, <strong>두 변수 관계</strong>, <strong>분포 확인</strong> 등
-          목적에 따라 위젯 조합이 달라집니다. 아래는 출발점 예시입니다.
+          수행평가에서는 <strong>똑같은 화면복사가 아니라</strong>, 자신이 고른 데이터와 질문에 맞게 위젯을 골라 연결하는
+          것이 중요합니다. 빅데이터분석은 <strong>집단 비교</strong>, <strong>두 변수 관계</strong>, <strong>분포 확인</strong> 등
+          목적에 따라 위젯 조합이 달라집니다. 아래는 예시일 뿐이며, 데이터에 따라 다른 위젯을 써도 됩니다.
         </p>
         <ManualUl
           items={[
-            '그룹별 평균·분포 비교: Visualize 범주의 Box Plot, Bar Plot, Distributions 등. 범주형 열을 “그룹” 축에 두는 연습을 하세요.',
-            '두 수치 변수 관계: Visualize의 Scatter Plot. 필요 시 Model 범주의 Linear Regression(선형 회귀) 등(과정에서 배운 범위 내)',
-            '기초 통계 수치: Data 범주의 Column Statistics 위젯으로 열(변수)별 평균·분산·최댓값·최솟값 등을 확인합니다. (설치 버전에 따라 표기가 조금 다를 수 있으니 화면에서 같은 이름을 찾으세요.)',
+            'Data 범주의 Data Table: 표가 제대로 읽혔는지 행·열을 확인할 때 유용합니다. File 출력을 Data Table 입력에 연결합니다. (앞 단계에서 이미 했다면 이어서 통계·시각화로 넘어가면 됩니다.)',
+            'Data 범주의 Column Statistics: 열(변수)별 평균·분산·최솟값·최댓값 등 요약을 볼 때 (설치 버전에 따라 표기가 조금 다를 수 있습니다.)',
+            'Visualize 범주의 Bar Plot, Distributions: 막대·분포(히스토그램 등). 본인 데이터와 분석 목적에 맞는 시각화 위젯을 고릅니다.',
+            'Visualize 범주의 Scatter Plot: 두 변수 관계',
+            'Visualize 범주의 Box Plot: 값의 퍼짐·이상치·그룹 비교. 범주형 열을 그룹 축에 두는 연습을 하세요.',
+            '필요 시 Model 범주의 Linear Regression(선형 회귀) 등(과정에서 배운 범위 내)',
           ]}
         />
         <p>
-          <strong>중요:</strong> 친구와 똑같은 연결만 복사하기보다, 본인의 &quot;무엇을 알고 싶은가&quot;에 맞게 위젯과
-          변수를 선택합니다.
+          연결 방법: 한 위젯 오른쪽의 <strong>작은 원(출력)</strong>에서 다른 위젯 왼쪽의 <strong>원(입력)</strong>으로
+          선을 드래그합니다. 데이터가 흐르는 방향이 맞는지 확인하세요.
+        </p>
+        <p>
+          <strong>차트(시각화) 위젯</strong>은 수업에서 다룬 범위 안에서, <strong>본인이 세운 분석 질문</strong>에 가장 잘 맞는
+          것을 선택합니다. 친구와 똑같은 연결만 복사하지 말고 &quot;무엇을 알고 싶은가&quot;에 맞게 변수와 위젯을 고르세요.
         </p>
       </ManualStep>
 
@@ -78,6 +87,7 @@ export default function ManualGrade3() {
         <ManualUl
           items={[
             '각 위젯을 열어 출력이 비어 있지 않은지 확인합니다.',
+            '분석 목적에 맞는 차트 위젯을 골랐는지 한 번 더 점검합니다.',
             '제출용 그래프는 축 레이블·어떤 변수인지 스스로 설명할 수 있어야 합니다.',
           ]}
         />
@@ -95,8 +105,10 @@ export default function ManualGrade3() {
 
       <ManualStep n={6} title="Orange 작업 파일(.ows) 저장">
         <p>
-          <strong>File → Save As…</strong>로 전체 캔버스를 <strong>.ows</strong>로 저장합니다. 파일 이름은 위 안내와 같이{' '}
-          <strong>학번이름_수행1.ows</strong> 형태로 맞춥니다. 차트 이미지와 <strong>세트</strong>로 갖추는 것이 안전합니다.
+          선생님이 요구하는 <strong>작업 전체(위젯 배치·연결)</strong>를 남기려면 Orange 메뉴에서 <strong>File → Save</strong>를
+          누른 뒤, 저장 대화상자에서 <strong>바탕화면\빅데이터</strong> 폴더로 들어가 위치를 맞춥니다. 확장자가{' '}
+          <strong>.ows</strong>인지 확인하고, 파일 이름은 위 안내와 같이 <strong>학번이름_수행1.ows</strong> 형태로 저장합니다.
+          차트 이미지와 <strong>세트</strong>로 갖추는 것이 안전합니다.
         </p>
       </ManualStep>
 
@@ -122,6 +134,7 @@ export default function ManualGrade3() {
             '통계 값을 대충 적고 Orange 결과와 숫자가 다른 경우 → 위젯에 나온 값을 그대로 옮기기',
             '리로스쿨에 차트·.ows 중 하나만 올리거나, 파일명 규칙(학번이름_수행1.ows 등)을 어기는 경우',
             '상관관계를 인과관계처럼 쓰는 경우 → 제출란「주의점」에 한계를 명시',
+            '분석 목적과 맞지 않는 그래프만 고르거나, 친구 화면을 그대로 따라 연결만 한 경우',
           ]}
         />
       </section>
