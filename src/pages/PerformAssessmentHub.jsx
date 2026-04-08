@@ -64,8 +64,7 @@ export default function PerformAssessmentHub({ grade }) {
           </Link>
 
           <p className="text-xs text-slate-600 leading-relaxed pt-2 pl-0.5">
-            제출 화면에서는 <strong>복사·붙여넣기·우클릭 메뉴가 제한</strong>됩니다. 답은 미리 메모장에 적어 두었다가 직접
-            입력하세요.
+            제출 화면에서는 <strong>복사·붙여넣기·우클릭 메뉴가 제한</strong>됩니다.
           </p>
         </div>
       </div>
