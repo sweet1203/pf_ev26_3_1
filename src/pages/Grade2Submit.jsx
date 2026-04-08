@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+﻿import React, { useMemo, useState } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import { TextAreaField } from '../components/TextAreaField.jsx';
 import { getClientSubmissionMeta } from '../clientDeviceMeta.js';
@@ -72,7 +72,7 @@ export default function Grade2Submit() {
     }
 
     if (!dataName.trim()) {
-      showToast('데이터 이름을 작성하세요.', 'error');
+      showToast('?곗씠???대쫫???묒꽦?섏꽭??', 'error');
       return;
     }
 
@@ -91,7 +91,7 @@ export default function Grade2Submit() {
       const ts = Date.now();
       const sheetPayload = {
         gradeLevel: 2,
-        subject: '정보',
+        subject: '?뺣낫',
         sheetName: GOOGLE_SHEET_TAB_GRADE2,
         studentId: identity.id,
         studentName: identity.name,
@@ -105,7 +105,7 @@ export default function Grade2Submit() {
         showToast(result.message, 'error');
         return;
       }
-      showToast('🎉 제출되었습니다.', 'success');
+      showToast('?럦 ?쒖텧?섏뿀?듬땲??', 'success');
       resetForm();
     } finally {
       setIsSubmitting(false);
@@ -123,8 +123,8 @@ export default function Grade2Submit() {
       <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
       <div className="bg-teal-600 p-6 text-white text-center relative overflow-hidden">
         <div className="relative z-10">
-          <p className="text-sm font-medium text-teal-100 mb-1">2학년 · 정보</p>
-          <h1 className="text-3xl font-bold mb-2">수행평가 제출</h1>
+          <p className="text-sm font-medium text-teal-100 mb-1">2?숇뀈 쨌 ?뺣낫</p>
+          <h1 className="text-3xl font-bold mb-2">?섑뻾?됯? ?쒖텧</h1>
         </div>
         <div className="absolute -top-10 -right-10 w-32 h-32 bg-teal-500 rounded-full opacity-50" />
         <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-teal-700 rounded-full opacity-50" />
@@ -132,18 +132,18 @@ export default function Grade2Submit() {
 
       <form onSubmit={handleSubmit} className="p-8 space-y-8">
         <div>
-          <h2 className="text-lg font-bold text-gray-800 mb-4">✔ 기본 정보</h2>
+          <h2 className="text-lg font-bold text-gray-800 mb-4">??湲곕낯 ?뺣낫</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">
-                학번을 작성하세요. <span className="text-red-500">*</span>
+                ?숇쾲???묒꽦?섏꽭?? <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 inputMode="numeric"
                 autoComplete="off"
                 maxLength={5}
-                placeholder="숫자 5자리 (예: 20101)"
+                placeholder="?レ옄 5?먮━ (?? 20101)"
                 className={inputClass}
                 value={studentId}
                 onChange={(e) => setStudentId(e.target.value.replace(/\D/g, '').slice(0, 5))}
@@ -154,11 +154,11 @@ export default function Grade2Submit() {
             </div>
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-1">
-                이름을 작성하세요. <span className="text-red-500">*</span>
+                ?대쫫???묒꽦?섏꽭?? <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
-                placeholder="홍길동"
+                placeholder="?띻만??
                 className={inputClass}
                 value={studentName}
                 onChange={(e) => setStudentName(e.target.value)}
@@ -171,8 +171,8 @@ export default function Grade2Submit() {
 
           <div>
             <p className="text-sm font-semibold text-gray-700 mb-2">
-              반을 작성하세요. <span className="text-red-500">*</span>
-              <span className="font-normal text-gray-500 ml-1">(정보 A, C, D, E 중 하나)</span>
+              諛섏쓣 ?묒꽦?섏꽭?? <span className="text-red-500">*</span>
+              <span className="font-normal text-gray-500 ml-1">(?뺣낫 A, C, D, E 以??섎굹)</span>
             </p>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {CLASS_OPTIONS_GRADE2.map((opt) => (
@@ -198,18 +198,18 @@ export default function Grade2Submit() {
         </div>
 
         <div className="space-y-6 bg-gray-50 p-6 rounded-xl border border-gray-200">
-          <h2 className="text-xl font-bold text-gray-800 mb-2">① 데이터 수집</h2>
+          <h2 className="text-xl font-bold text-gray-800 mb-2">???곗씠???섏쭛</h2>
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
-              수행평가용 데이터셋의 이름(데이터 이름)을 작성하세요. <span className="text-red-500">*</span>
+              ?섑뻾?됯????곗씠?곗뀑???대쫫(?곗씠???대쫫)???묒꽦?섏꽭?? <span className="text-red-500">*</span>
             </label>
             <p className="text-xs text-gray-500 mb-2 leading-relaxed">
-              👉 수행평가용 데이터셋 안내에 나온 <strong>파일명</strong>과 같게 적으세요.
+              ?몛 ?섑뻾?됯????곗씠?곗뀑 ?덈궡???섏삩 <strong>?뚯씪紐?/strong>怨?媛숆쾶 ?곸쑝?몄슂.
             </p>
             <input
               type="text"
               autoComplete="off"
-              placeholder="예: test01_학생시험점수.csv"
+              placeholder="?? test01_?숈깮?쒗뿕?먯닔.csv"
               className={inputClass}
               value={dataName}
               onChange={(e) => setDataName(e.target.value)}
@@ -219,8 +219,8 @@ export default function Grade2Submit() {
             />
           </div>
           <TextAreaField
-            label="데이터의 출처를 작성하세요."
-            hint="👉 (예: 공공데이터포털, 통계청 등)"
+            label="?곗씠?곗쓽 異쒖쿂瑜??묒꽦?섏꽭??"
+            hint="?몛 (?? 怨듦났?곗씠?고룷?? ?듦퀎泥???"
             value={dataSource}
             onChange={(e) => setDataSource(e.target.value)}
             rows={3}
@@ -229,8 +229,8 @@ export default function Grade2Submit() {
             onBeforeInput={handleBeforeInput}
           />
           <TextAreaField
-            label="어떤 데이터를 수집했는지 2~3문장으로 설명하세요."
-            hint="👉 (무엇에 대한 데이터인지)"
+            label="?대뼡 ?곗씠?곕? ?섏쭛?덈뒗吏 2~3臾몄옣?쇰줈 ?ㅻ챸?섏꽭??"
+            hint="?몛 (臾댁뾿??????곗씠?곗씤吏)"
             value={dataDescription}
             onChange={(e) => setDataDescription(e.target.value)}
             rows={4}
@@ -239,8 +239,8 @@ export default function Grade2Submit() {
             onBeforeInput={handleBeforeInput}
           />
           <TextAreaField
-            label="수집한 데이터의 항목(열)을 작성하세요."
-            hint="👉 (예: 연도, 기온, 지역 등)"
+            label="?섏쭛???곗씠?곗쓽 ??ぉ(?????묒꽦?섏꽭??"
+            hint="?몛 (?? ?곕룄, 湲곗삩, 吏????"
             value={dataColumns}
             onChange={(e) => setDataColumns(e.target.value)}
             rows={3}
@@ -251,10 +251,10 @@ export default function Grade2Submit() {
         </div>
 
         <div className="space-y-6 bg-gray-50 p-6 rounded-xl border border-gray-200">
-          <h2 className="text-xl font-bold text-gray-800 mb-2">② 데이터 시각화</h2>
+          <h2 className="text-xl font-bold text-gray-800 mb-2">???곗씠???쒓컖??/h2>
           <TextAreaField
-            label="사용한 그래프의 종류를 작성하세요."
-            hint="👉 (예: 막대그래프, 꺾은선그래프 등)"
+            label="?ъ슜??洹몃옒?꾩쓽 醫낅쪟瑜??묒꽦?섏꽭??"
+            hint="?몛 (?? 留됰?洹몃옒?? 爰얠??좉렇?섑봽 ??"
             value={graphType}
             onChange={(e) => setGraphType(e.target.value)}
             rows={2}
@@ -263,8 +263,8 @@ export default function Grade2Submit() {
             onBeforeInput={handleBeforeInput}
           />
           <TextAreaField
-            label="해당 그래프를 선택한 이유를 작성하세요."
-            hint="👉 (데이터의 특성과 연결하여 설명)"
+            label="?대떦 洹몃옒?꾨? ?좏깮???댁쑀瑜??묒꽦?섏꽭??"
+            hint="?몛 (?곗씠?곗쓽 ?뱀꽦怨??곌껐?섏뿬 ?ㅻ챸)"
             value={graphSelectionReason}
             onChange={(e) => setGraphSelectionReason(e.target.value)}
             rows={4}
@@ -275,9 +275,9 @@ export default function Grade2Submit() {
         </div>
 
         <div className="space-y-6 bg-gray-50 p-6 rounded-xl border border-gray-200">
-          <h2 className="text-xl font-bold text-gray-800 mb-2">③ 데이터 해석 (핵심)</h2>
+          <h2 className="text-xl font-bold text-gray-800 mb-2">???곗씠???댁꽍 (?듭떖)</h2>
           <TextAreaField
-            label="그래프를 바탕으로 데이터의 변화 추이, 특징, 미래 예측, 사회적 의미를 포함하여 5문장 이상의 완성된 글로 작성하세요."
+            label="洹몃옒?꾨? 諛뷀깢?쇰줈 ?곗씠?곗쓽 蹂??異붿씠, ?뱀쭠, 誘몃옒 ?덉륫, ?ы쉶???섎?瑜??ы븿?섏뿬 5臾몄옣 ?댁긽???꾩꽦??湲濡??묒꽦?섏꽭??"
             value={dataInterpretation}
             onChange={(e) => setDataInterpretation(e.target.value)}
             rows={10}
@@ -288,7 +288,7 @@ export default function Grade2Submit() {
         </div>
 
         <div className="mt-8 rounded-xl border border-orange-200 bg-orange-50 px-5 py-4 text-center text-gray-800">
-          <p className="text-base font-semibold">파일 제출은 선생님의 안내를 따르세요.</p>
+          <p className="text-base font-semibold">?뚯씪 ?쒖텧? ?좎깮?섏쓽 ?덈궡瑜??곕Ⅴ?몄슂.</p>
         </div>
 
         <button
@@ -298,10 +298,11 @@ export default function Grade2Submit() {
             isSubmitting ? 'bg-teal-400 cursor-not-allowed' : 'bg-teal-600 hover:bg-teal-700'
           }`}
         >
-          {isSubmitting ? '전송 중...' : '최종 제출하기'}
+          {isSubmitting ? '?꾩넚 以?..' : '理쒖쥌 ?쒖텧?섍린'}
         </button>
       </form>
       </div>
     </div>
   );
 }
+
