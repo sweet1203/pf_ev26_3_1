@@ -106,7 +106,11 @@ export default function Grade2Submit() {
     'w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none transition-all';
 
   return (
-    <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
+    <div
+      onContextMenu={(e) => e.preventDefault()}
+      className="-mx-4 -my-8 min-h-screen px-4 py-8"
+    >
+      <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
       <div className="bg-teal-600 p-6 text-white text-center relative overflow-hidden">
         <div className="relative z-10">
           <p className="text-sm font-medium text-teal-100 mb-1">2학년 · 정보</p>
@@ -273,6 +277,7 @@ export default function Grade2Submit() {
           {isSubmitting ? '전송 중...' : '최종 제출하기'}
         </button>
       </form>
+      </div>
     </div>
   );
 }

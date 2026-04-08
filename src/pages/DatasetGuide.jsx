@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { ArrowLeft, BookOpen, Download, FileSpreadsheet, GraduationCap } from 'lucide-react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { ArrowLeft, BookOpen, Download, ExternalLink, FileSpreadsheet, GraduationCap } from 'lucide-react';
 import {
   DATASET_CATALOG,
   datasetFileUrl,
@@ -8,13 +8,39 @@ import {
   datasetStatsForPurpose,
 } from '../datasetCatalog.js';
 
+/** **강조** 와 줄바꿈이 있는 수행평가용 출처 문단 렌더 */
+function SourceAssessmentText({ text }) {
+  return (
+    <div className="text-xs text-slate-700 leading-relaxed space-y-1.5">
+      {text.split('\n').map((line, i) => {
+        const parts = line.split(/(\*\*[^*]+\*\*)/g).filter(Boolean);
+        return (
+          <p key={i} className="m-0">
+            {parts.map((part, j) => {
+              const m = part.match(/^\*\*([^*]+)\*\*$/);
+              if (m) return <strong key={j} className="text-slate-800">{m[1]}</strong>;
+              return <span key={j}>{part}</span>;
+            })}
+          </p>
+        );
+      })}
+    </div>
+  );
+}
+
 /** @param {{ variant?: 'assessment' | 'practice' }} props */
 export default function DatasetGuide({ variant = 'assessment' }) {
-  const [grade, setGrade] = useState(2);
+  const [searchParams] = useSearchParams();
+  const gradeParam = searchParams.get('grade');
+  const gradeLocked = gradeParam === '2' || gradeParam === '3';
+  const [internalGrade, setInternalGrade] = useState(2);
+  const grade = gradeLocked ? Number(gradeParam) : internalGrade;
+
   const purpose = variant;
   const isAssessment = purpose === 'assessment';
 
   const submitPath = grade === 2 ? '/grade2' : '/grade3';
+  const performHubPath = `/perform/grade${grade}`;
   const accentBtn =
     grade === 2
       ? 'bg-teal-700 hover:bg-teal-800 border-teal-900/20 text-white'
@@ -24,14 +50,32 @@ export default function DatasetGuide({ variant = 'assessment' }) {
 
   return (
     <div className="max-w-4xl mx-auto pb-16">
-      <div className="mb-6">
-        <Link
-          to="/"
-          className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
-        >
-          <ArrowLeft size={18} />
-          처음으로
-        </Link>
+      <div className="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2">
+        {isAssessment && gradeLocked ? (
+          <>
+            <Link
+              to={performHubPath}
+              className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+            >
+              <ArrowLeft size={18} />
+              {grade}학년 수행평가 안내
+            </Link>
+            <Link
+              to="/"
+              className="text-sm font-medium text-slate-500 hover:text-slate-800 underline underline-offset-2"
+            >
+              처음(학년 선택)
+            </Link>
+          </>
+        ) : (
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
+          >
+            <ArrowLeft size={18} />
+            처음으로
+          </Link>
+        )}
       </div>
 
       <div
@@ -81,23 +125,41 @@ export default function DatasetGuide({ variant = 'assessment' }) {
         </div>
 
         <div className="p-5 sm:p-6 border-b border-gray-100 bg-gray-50/80">
-          <p className="text-sm font-semibold text-gray-700 mb-3">학년 선택</p>
-          <div className="flex flex-col sm:flex-row gap-3">
-            <button
-              type="button"
-              onClick={() => setGrade(2)}
-              className={`flex-1 py-3 px-4 rounded-xl font-semibold text-sm sm:text-base transition-all ${tabActive2}`}
-            >
-              2학년 (정보)
-            </button>
-            <button
-              type="button"
-              onClick={() => setGrade(3)}
-              className={`flex-1 py-3 px-4 rounded-xl font-semibold text-sm sm:text-base transition-all ${tabActive3}`}
-            >
-              3학년 (빅데이터분석)
-            </button>
-          </div>
+          {gradeLocked ? (
+            <>
+              <p className="text-sm font-semibold text-gray-800 mb-2">
+                {grade}학년 전용 링크로 열림
+              </p>
+              <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+                주소에 <span className="font-mono text-gray-800">?grade={grade}</span>가 포함되어 있어 다른 학년으로 바꿀 수 없습니다. 다른 학년 CSV가
+                필요하면{' '}
+                <Link to="/" className="font-semibold underline underline-offset-2">
+                  처음 화면
+                </Link>
+                에서 해당 학년 수행평가 안내로 들어가 주세요.
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="text-sm font-semibold text-gray-700 mb-3">학년 선택</p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  type="button"
+                  onClick={() => setInternalGrade(2)}
+                  className={`flex-1 py-3 px-4 rounded-xl font-semibold text-sm sm:text-base transition-all ${tabActive2}`}
+                >
+                  2학년 (정보)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setInternalGrade(3)}
+                  className={`flex-1 py-3 px-4 rounded-xl font-semibold text-sm sm:text-base transition-all ${tabActive3}`}
+                >
+                  3학년 (빅데이터분석)
+                </button>
+              </div>
+            </>
+          )}
           <p className="mt-4 text-xs sm:text-sm text-gray-600 leading-relaxed">
             {grade === 2 ? (
               <>
@@ -114,10 +176,12 @@ export default function DatasetGuide({ variant = 'assessment' }) {
 
         <div className="p-4 sm:px-6 border-b border-gray-100 bg-white">
           <Link
-            to="/datasets"
+            to={isAssessment && gradeLocked ? performHubPath : '/datasets'}
             className="text-sm font-medium text-slate-600 hover:text-slate-900 underline underline-offset-2"
           >
-            ← 데이터셋 안내 처음(수행평가용 / 연습용 선택)
+            {isAssessment && gradeLocked
+              ? `← ${grade}학년 수행평가 안내로`
+              : '← 데이터셋 안내 처음(수행평가용 / 연습용 선택)'}
           </Link>
         </div>
 
@@ -131,9 +195,12 @@ export default function DatasetGuide({ variant = 'assessment' }) {
           {isAssessment ? (
             <Link
               to={submitPath}
+              target="_blank"
+              rel="noopener noreferrer"
               className={`inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold shadow-md transition-colors border sm:ml-auto ${accentBtn}`}
             >
-              {grade}학년 제출 페이지
+              {grade}학년 제출 (새 탭)
+              <ExternalLink size={16} className="opacity-90 shrink-0" aria-hidden />
             </Link>
           ) : (
             <div className="flex flex-col sm:flex-row gap-2 sm:ml-auto sm:items-center">
@@ -172,7 +239,12 @@ export default function DatasetGuide({ variant = 'assessment' }) {
                       {d.title}
                     </h2>
                     <p className="mt-2 text-sm text-gray-600 leading-relaxed">{d.blurb}</p>
-                    {d.source ? (
+                    {isAssessment && d.sourceAssessment ? (
+                      <div className="mt-3 rounded-lg bg-slate-50 border border-slate-100 px-3 py-2.5">
+                        <p className="text-[11px] font-semibold text-slate-600 mb-2">데이터 출처 안내</p>
+                        <SourceAssessmentText text={d.sourceAssessment} />
+                      </div>
+                    ) : !isAssessment && d.source ? (
                       <div className="mt-3 rounded-lg bg-slate-50 border border-slate-100 px-3 py-2.5">
                         <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500 mb-1">
                           출처·원본·라이선스 안내
@@ -205,7 +277,9 @@ export default function DatasetGuide({ variant = 'assessment' }) {
       </ul>
 
       <p className="mt-10 text-center text-xs text-gray-500 leading-relaxed px-2">
-        데이터는 교육 목적으로 제공되며, 출처·라이선스는 각 원본 데이터셋을 따릅니다.
+        {isAssessment
+          ? '위 파일은 수업·수행평가용으로 제공됩니다. 세부 출처는 각 카드의 안내를 참고하세요.'
+          : '데이터는 교육 목적으로 제공되며, 출처·라이선스는 각 원본 데이터셋을 따릅니다.'}
       </p>
     </div>
   );

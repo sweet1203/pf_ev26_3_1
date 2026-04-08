@@ -12,6 +12,7 @@ import ManualGrade2 from './pages/ManualGrade2.jsx';
 import ManualGrade3 from './pages/ManualGrade3.jsx';
 import PrepGuideGrade3BigData from './pages/PrepGuideGrade3BigData.jsx';
 import PrepGuideGrade2Information from './pages/PrepGuideGrade2Information.jsx';
+import PerformAssessmentHub from './pages/PerformAssessmentHub.jsx';
 
 function Layout() {
   const [toast, setToast] = useState(null);
@@ -60,6 +61,8 @@ export default function App() {
     <Routes>
       <Route element={<Layout />}>
         <Route path="/" element={<Home />} />
+        <Route path="/perform/grade2" element={<PerformAssessmentHub grade={2} />} />
+        <Route path="/perform/grade3" element={<PerformAssessmentHub grade={3} />} />
         <Route path="/datasets" element={<DatasetHub />} />
         <Route path="/datasets/assessment" element={<DatasetGuide variant="assessment" />} />
         <Route path="/datasets/practice" element={<DatasetGuide variant="practice" />} />
